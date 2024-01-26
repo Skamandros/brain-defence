@@ -3,7 +3,7 @@ import pyglet
 pyglet.resource.path = ["../resources"]
 pyglet.resource.reindex()
 
-window = pyglet.window.Window()
+window = pyglet.window.Window(2160, 1440, fullscreen=True)
 label = pyglet.text.Label(
     "Hello, world",
     font_name="Times New Roman",
