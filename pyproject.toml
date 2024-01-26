@@ -1,0 +1,31 @@
+[build-system]
+requires = [
+  "setuptools>=42",
+  "wheel",
+  "pyglet",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brain-defense"
+version = "0.0.0"
+dynamic = ["dependencies"]
+requires-python = ">=3.11"
+authors = [
+  {name = "Michael Schmeißer"},
+  {name = "Roman Kempt"},
+  {name = "Matthias Kricke"},
+  {name = "André Fichtner-Winkler"},
+]
+
+description = "Global Game Jam 2024 Brain-Defense Game"
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+keywords = ["brain", "defense", "make me laugh"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
