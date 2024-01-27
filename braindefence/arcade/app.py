@@ -1,7 +1,6 @@
 import arcade
 from pathlib import Path
 
-from braindefence.arcade.levels.level1map import Level1Map
 from constants import *
 
 
@@ -29,6 +28,7 @@ class BrainDefence(arcade.Window):
         # Clear the screen to the background color
         self.clear()
         self.current_map.render()
+
 
     def on_update(self, delta_time: float):
         self.current_map.update(delta_time)
