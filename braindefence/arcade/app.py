@@ -23,8 +23,6 @@ class BrainDefence(arcade.Window):
         self.current_map = Level1Map()
         self.current_map.render_map()
 
-
-
     def on_draw(self):
         """Render the screen."""
 
@@ -32,6 +30,8 @@ class BrainDefence(arcade.Window):
         self.clear()
         self.current_map.render()
 
+    def on_update(self, delta_time: float):
+        self.current_map.update(delta_time)
 
 
 def main():
