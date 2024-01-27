@@ -1,3 +1,5 @@
+import logging
+
 import arcade
 from pathlib import Path
 
@@ -33,6 +35,11 @@ class BrainDefence(arcade.Window):
         self.spawn_sprite = None
         self.brain_sprite = None
         self._timeSinceSpawn = 0
+        self.bg_music = []
+        self.bg_music_playing = 0
+        self.track_from = None
+        self.track_to = None
+        self.fade_progress = 1
 
         arcade.set_background_color(arcade.csscolor.CORNFLOWER_BLUE)
 
@@ -84,8 +91,22 @@ class BrainDefence(arcade.Window):
         protagonist.center_y = protagonist.height / 2
         self.scene.add_sprite("Protagonist", protagonist)
 
-        bg_music = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_1.wav"), True)
-        arcade.play_sound(bg_music, looping=True, volume=1)
+        track1 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_1-01.wav"), True)
+        self.bg_music.append(arcade.play_sound(track1, looping=True, volume=1))
+        track2 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_2-01.wav"), True)
+        self.bg_music.append(arcade.play_sound(track2, looping=True, volume=0))
+        track3 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_3-01.wav"), True)
+        self.bg_music.append(arcade.play_sound(track3, looping=True, volume=0))
+        track4 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_4-01.wav"), True)
+        self.bg_music.append(arcade.play_sound(track4, looping=True, volume=0))
+        track5 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_5-01.wav"), True)
+        self.bg_music.append(arcade.play_sound(track5, looping=True, volume=0))
+        for i, track in enumerate(self.bg_music):
+            if i == self.bg_music_playing:
+                track.volume = 1
+            else:
+                track.volume = 0
+        arcade.schedule(self._switch_music, 10)
 
         level01intro = arcade.load_sound(RESOURCE_DIR.joinpath("sound/Level01_Intro.mp3"), True)
         arcade.play_sound(level01intro)
@@ -136,13 +157,26 @@ class BrainDefence(arcade.Window):
                 self.enemy_leaked()
                 self.enemies.remove(enemy)
 
+    def _switch_music(self, delta_time: float):
+        self.track_from = self.bg_music_playing
+        self.bg_music_playing = (self.bg_music_playing + 1) % len(self.bg_music)
+        self.track_to = self.bg_music_playing
+        self.fade_progress = 0
+        logging.info("Fade from {} to {}".format(self.track_from, self.track_to))
+
+    def on_update(self, delta_time: float):
+        self.update_enemies(delta_time)
+        if self.fade_progress < 1:
+            self.fade_progress += delta_time / 3
+            self.bg_music[self.track_from].volume = 1 - self.fade_progress
+            self.bg_music[self.track_to].volume = self.fade_progress
+            logging.info("Fade progress {}".format(self.fade_progress))
+
     def on_draw(self):
         """Render the screen."""
 
         # Clear the screen to the background color
         self.clear()
-        self.update_enemies(1 / 60)
-        print(len(list(self.enemies)))
         # Draw our sprites
         # self.wall_list.draw()
         self.scene.add_sprite_list(
