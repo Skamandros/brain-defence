@@ -33,18 +33,32 @@ class BrainDefence(arcade.Window):
         self.brain_sprite = None
         self._timeSinceSpawn = 0
 
-        arcade.set_background_color(arcade.csscolor.CORNFLOWER_BLUE)
-
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
-
-        # Initialize Scene
-        self.scene = arcade.Scene()
 
         # Create the Sprite lists
         self.enemies = arcade.SpriteList()
         self.towers = arcade.SpriteList(use_spatial_hash=True)
         self.HUD_batch = arcade.SpriteList()
+
+        # Name of map file to load
+        map_name = Path("../resources/maps/Level-one.tmx").resolve()
+
+        # Layer specific options are defined based on Layer names in a dictionary
+        # Doing this will make the SpriteList for the platforms layer
+        # use spatial hashing for detection.
+        layer_options = {
+            "Platforms": {
+                "use_spatial_hash": True,
+            },
+        }
+
+        # Read in the tiled map
+        self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
+
+        # Initialize Scene with our TileMap, this will automatically add all layers
+        # from the map as SpriteLists in the scene in the proper order.
+        self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
         # Set up the spawn, specifically placing it at these coordinates.
         image_source = Path("../resources/eye.png")
@@ -56,8 +70,8 @@ class BrainDefence(arcade.Window):
         # Set up the spawn, specifically placing it at these coordinates.
         image_source = Path("../resources/brain.png")
         self.brain = arcade.Sprite(image_source.resolve(), 1)
-        self.brain.center_x = World.Width * 0.9
-        self.brain.center_y = World.Height * 0.9
+        self.brain.center_x = World.Width * 0.8
+        self.brain.center_y = World.Height * 0.8
         self.scene.add_sprite("Brain", self.brain)
 
         self._enemies_killed = 0
@@ -74,6 +88,10 @@ class BrainDefence(arcade.Window):
             font_name="Roboto",
         )
         self._label.visible = False
+
+        # Set the background color
+        if self.tile_map.background_color:
+            arcade.set_background_color(self.tile_map.background_color)
 
     def enemy_killed(self):
         self._enemies_killed += 1

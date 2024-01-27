@@ -23,7 +23,7 @@ class Enemy(Entity):
         super().__init__(imagefilepath, CHARACTER_SCALING)
 
         self.health = 10
-        self.speed = 10
+        self.speed = 100
         self._targetX = World.Goal[0]
         self._targetY = World.Goal[1]
         self.center_x = World.Width * 0.15

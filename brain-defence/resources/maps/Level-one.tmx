@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="11" tilewidth="128" tileheight="128" infinite="0" nextlayerid="7" nextobjectid="1">
- <tileset firstgid="1" source="../IdeaProjects/brain-defence/brain-defence/resources/tiles/background-tiles.tsx"/>
+ <tileset firstgid="1" source="../tiles/background-tiles.tsx"/>
  <tileset firstgid="5" name="Background" tilewidth="1" tileheight="1" tilecount="0" columns="0"/>
  <layer id="1" name="background" width="20" height="11">
   <data encoding="csv">
