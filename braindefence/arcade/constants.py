@@ -8,8 +8,8 @@ TILE_SCALING = 1
 
 
 class World:
-    Width = 1080
-    Height = 760
+    Width = 1920
+    Height = 1080
     SpawnRateSeconds = 5
     Goal = (0.85 * Width, 0.85 * Height)
 
