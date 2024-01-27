@@ -1,6 +1,7 @@
 import arcade
 from pathlib import Path
 
+from braindefence.arcade.levels.level1map import Level1Map
 from constants import *
 
 
