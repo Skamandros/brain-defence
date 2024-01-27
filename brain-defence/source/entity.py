@@ -4,6 +4,7 @@ import math
 from constants import World
 import rendering
 from tower_types import *
+from projectile_types import *
 
 
 class EntityContainer:
@@ -53,7 +54,7 @@ class Enemy:
 
 class Tower:
     def __init__(self, x, y, container: EntityContainer, tower_type: TowerType):
-        tower_type.draw(x, y)
+        self.drawable = tower_type.drawable(x, y, rendering_batches[BatchNames.Entity_Batch])
         self.x = x
         self.y = y
         self.fireCooldown = 0
@@ -73,7 +74,8 @@ class Tower:
             self.targetEnemy = None
         self.fireCooldown = max(0, self.fireCooldown - dt)
         if self.fireCooldown == 0 and self.targetEnemy is not None:
-            self.container.projectiles.append(Projectile(self.x, self.y, self.targetEnemy))
+            self.container.projectiles.append(
+                Projectile(self.x, self.y, self.targetEnemy, self.tower_type.get_projectile_type()))
             self.fireCooldown = self.tower_type.attack_rate
 
     def calc_distance(self, enemy):
@@ -81,11 +83,10 @@ class Tower:
 
 
 class Projectile:
-    def __init__(self, x, y, target: Enemy):
+    def __init__(self, x, y, target: Enemy, projectile_type: ProjectileType):
         self.x = x
         self.y = y
-        self.shape = shapes.Circle(x, y, 2, color=(255, 0, 0),
-                                   batch=rendering.rendering_batches[BatchNames.Projectile_Batch])
+        self.drawable = projectile_type.drawable(x, y, batch=rendering.rendering_batches[BatchNames.Projectile_Batch])
         self.targetEnemy = target
         self.speed = World.ProjectileSpeed
 
@@ -94,8 +95,8 @@ class Projectile:
         delta_y = self.targetEnemy.y - self.y
         self.x += (delta_x * self.speed) / abs(delta_x + delta_y)
         self.y += (delta_y * self.speed) / abs(delta_x + delta_y)
-        self.shape.x = self.x
-        self.shape.y = self.y
+        self.drawable.x = self.x
+        self.drawable.y = self.y
 
     def passed(self):
         return abs(self.x - self.targetEnemy.x) < 5 and abs(self.y - self.targetEnemy.y < 5)
