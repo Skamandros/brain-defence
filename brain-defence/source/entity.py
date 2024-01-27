@@ -5,17 +5,24 @@ from constants import World
 import rendering
 from tower_types import *
 from projectile_types import *
+from enemy_types import *
 
 
 class EntityContainer:
     def __init__(self):
         self.enemies = []
-        self.enemies.append(Enemy())
+        self.enemies.append(Enemy(DefaultEnemy()))
         self.towers = []
         self.towers.append(Tower(300, 300, self, BaseTower()))
         self.projectiles = []
+        self._timeSinceSpawn = 0
 
     def update(self, dt):
+        self._timeSinceSpawn += dt
+        if self._timeSinceSpawn > World.SpawnRateSeconds:
+            self._timeSinceSpawn = 0
+            self.enemies.append(Enemy(DefaultEnemy()))
+            logging.debug("Enemy spawned")
         for enemy in self.enemies:
             enemy.update(dt)
             if enemy.passed():
@@ -31,22 +38,21 @@ class EntityContainer:
 
 
 class Enemy:
-    def __init__(self):
+    def __init__(self, enemy_type: EnemyType):
         self.x = 0
         self.y = 0
         self.targetX = World.Width
         self.targetY = World.Height
-        self.speed = World.EnemySpeed
-        self.shape = shapes.Circle(x=self.x, y=self.y, radius=10, color=(0, 0, 255),
-                                   batch=rendering.rendering_batches[BatchNames.Entity_Batch])
+        self.drawable = enemy_type.drawable(self.x, self.y, batch=rendering.rendering_batches[BatchNames.Entity_Batch])
+        self.enemy_type = enemy_type
 
     def update(self, dt):
         delta_x = self.targetX - self.x
         delta_y = self.targetY - self.y
-        self.x += (delta_x * self.speed) / abs(delta_x + delta_y)
-        self.y += (delta_y * self.speed) / abs(delta_x + delta_y)
-        self.shape.x = self.x
-        self.shape.y = self.y
+        self.x += (delta_x * self.enemy_type.speed) / abs(delta_x + delta_y)
+        self.y += (delta_y * self.enemy_type.speed) / abs(delta_x + delta_y)
+        self.drawable.x = self.x
+        self.drawable.y = self.y
 
     def passed(self):
         return abs(self.x - self.targetX) < 10 and abs(self.y - self.targetY < 10)
@@ -86,15 +92,16 @@ class Projectile:
     def __init__(self, x, y, target: Enemy, projectile_type: ProjectileType):
         self.x = x
         self.y = y
-        self.drawable = projectile_type.drawable(x, y, batch=rendering.rendering_batches[BatchNames.Projectile_Batch])
+        self.drawable = projectile_type.drawable(x, y,
+                                                 batch=rendering.rendering_batches[BatchNames.Projectile_Batch])
         self.targetEnemy = target
-        self.speed = World.ProjectileSpeed
+        self.projectile_type = projectile_type
 
     def update(self, dt):
         delta_x = self.targetEnemy.x - self.x
         delta_y = self.targetEnemy.y - self.y
-        self.x += (delta_x * self.speed) / abs(delta_x + delta_y)
-        self.y += (delta_y * self.speed) / abs(delta_x + delta_y)
+        self.x += (delta_x * self.projectile_type.speed) / abs(delta_x + delta_y)
+        self.y += (delta_y * self.projectile_type.speed) / abs(delta_x + delta_y)
         self.drawable.x = self.x
         self.drawable.y = self.y
 

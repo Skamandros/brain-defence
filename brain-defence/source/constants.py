@@ -4,8 +4,6 @@ from enum import Enum
 class World:
     Width = 1080
     Height = 760
-    EnemySpeed = 3
-    ProjectileSpeed = 4
     SpawnRateSeconds = 3
 
 
