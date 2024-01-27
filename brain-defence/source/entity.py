@@ -70,8 +70,8 @@ class Enemy:
     def update(self, dt):
         delta_x = self._targetX - self.x
         delta_y = self._targetY - self.y
-        self.x += (delta_x * self._enemy_type.speed) / (abs(delta_x) + abs(delta_y))
-        self.y += (delta_y * self._enemy_type.speed) / (abs(delta_x) + abs(delta_y))
+        self.x += (delta_x * self._enemy_type.speed * dt) / (abs(delta_x) + abs(delta_y))
+        self.y += (delta_y * self._enemy_type.speed * dt) / (abs(delta_x) + abs(delta_y))
         self._drawable.x = self.x
         self._drawable.y = self.y
 
@@ -124,8 +124,8 @@ class Projectile:
     def update(self, dt):
         delta_x = self.targetEnemy.x - self.x
         delta_y = self.targetEnemy.y - self.y
-        self.x += (delta_x * self._projectile_type.speed) / (abs(delta_x) + abs(delta_y))
-        self.y += (delta_y * self._projectile_type.speed) / (abs(delta_x) + abs(delta_y))
+        self.x += (delta_x * self._projectile_type.speed * dt) / (abs(delta_x) + abs(delta_y))
+        self.y += (delta_y * self._projectile_type.speed * dt) / (abs(delta_x) + abs(delta_y))
         self._drawable.x = self.x
         self._drawable.y = self.y
 

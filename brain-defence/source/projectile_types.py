@@ -4,7 +4,7 @@ from pyglet import shapes
 
 
 class ProjectileType:
-    def __init__(self, speed=4):
+    def __init__(self, speed=240):
         self.speed = speed
 
     @abstractmethod

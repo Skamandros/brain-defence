@@ -4,7 +4,7 @@ from pyglet import shapes
 
 
 class EnemyType:
-    def __init__(self, speed=3, max_health=5):
+    def __init__(self, speed=180, max_health=5):
         self.speed = speed
         self.max_health = max_health
 
