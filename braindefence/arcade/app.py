@@ -38,13 +38,29 @@ class BrainDefence(arcade.Window):
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
 
-        # Initialize Scene
-        self.scene = arcade.Scene()
-
         # Create the Sprite lists
         self.enemies = arcade.SpriteList()
         self.towers = arcade.SpriteList(use_spatial_hash=True)
         self.HUD_batch = arcade.SpriteList()
+
+        # Name of map file to load
+        map_name = Path("../resources/maps/Level-one.tmx").resolve()
+
+        # Layer specific options are defined based on Layer names in a dictionary
+        # Doing this will make the SpriteList for the platforms layer
+        # use spatial hashing for detection.
+        layer_options = {
+            "Platforms": {
+                "use_spatial_hash": True,
+            },
+        }
+
+        # Read in the tiled map
+        self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
+
+        # Initialize Scene with our TileMap, this will automatically add all layers
+        # from the map as SpriteLists in the scene in the proper order.
+        self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
         # Set up the spawn, specifically placing it at these coordinates.
         image_source = Path("../resources/eye.png")
