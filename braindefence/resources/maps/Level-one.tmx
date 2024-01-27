@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="11" tilewidth="128" tileheight="128" infinite="0" nextlayerid="7" nextobjectid="1">
+ <tileset firstgid="1" source="../tiles/background-tiles.tsx"/>
+ <tileset firstgid="5" name="Background" tilewidth="1" tileheight="1" tilecount="0" columns="0"/>
+ <layer id="1" name="background" width="20" height="11">
+  <data encoding="csv">
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,4,4,2,
+2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,2,
+2,2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,4,2,2,2,
+2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,4,4,2,2,2,2,2,2,2,2,
+2,2,2,2,2,4,4,4,4,4,4,4,2,2,2,2,2,2,2,2,
+2,2,2,4,4,4,4,4,4,2,2,2,2,2,2,2,2,2,2,2,
+2,2,4,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+2,2,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+</data>
+ </layer>
+ <objectgroup id="2" name="Towers"/>
+ <objectgroup id="3" name="Projectiles"/>
+ <objectgroup id="4" name="Minions"/>
+ <objectgroup id="5" name="Start"/>
+ <objectgroup id="6" name="End"/>
+</map>
