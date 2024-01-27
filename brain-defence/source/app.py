@@ -1,10 +1,9 @@
-import sys
-
 import pyglet
 import logging
+import rendering
 
-from gamescreen import GameScreen
-from constants import World
+from ingame import GameScreen
+from constants import *
 
 pyglet.resource.path = ["../resources"]
 pyglet.resource.reindex()
@@ -15,8 +14,10 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-
-batch = pyglet.graphics.Batch()
+rendering.rendering_batches[BatchNames.Background_Batch] = pyglet.graphics.Batch()
+rendering.rendering_batches[BatchNames.Entity_Batch] = pyglet.graphics.Batch()
+rendering.rendering_batches[BatchNames.Projectile_Batch] = pyglet.graphics.Batch()
+rendering.rendering_batches[BatchNames.HUD_Batch] = pyglet.graphics.Batch()
 
 window = pyglet.window.Window(width=World.Width, height=World.Height)
 label = pyglet.text.Label(
@@ -28,16 +29,19 @@ label = pyglet.text.Label(
     anchor_x="center",
     anchor_y="center",
 )
-gamescreen = GameScreen(batch)
+gamescreen = GameScreen()
+
 
 def update(dt):
     gamescreen.update(dt)
+
 
 @window.event
 def on_draw():
     window.clear()
     # label.draw()
-    batch.draw()
+    for key, batch in rendering.rendering_batches.items():
+        batch.draw()
 
 
 if __name__ == "__main__":
