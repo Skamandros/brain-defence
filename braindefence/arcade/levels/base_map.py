@@ -86,50 +86,9 @@ class BaseMap:
             },
         }
 
-        # Read in the tiled map
-        self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
-
-        # Initialize Scene with our TileMap, this will automatically add all layers
-        # from the map as SpriteLists in the scene in the proper order.
-        self.scene = arcade.Scene.from_tilemap(self.tile_map)
-
-        # Set up the spawn, specifically placing it at these coordinates.
-        image_source = RESOURCE_DIR.joinpath("eye.png").resolve()
-        self.spawn = arcade.Sprite(image_source.resolve(), 1)
-        self.spawn.center_x = World.Width * 0.1
-        self.spawn.center_y = World.Height * 0.1
-        self.scene.add_sprite("Spawn", self.spawn)
-
-        # Set up the spawn, specifically placing it at these coordinates.
-        image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
-        self.brain = arcade.Sprite(image_source.resolve(), 1)
-        self.brain.center_x = World.Width * 0.9
-        self.brain.center_y = World.Height * 0.9
-        self.scene.add_sprite("Brain", self.brain)
-
-        self._enemies_killed = 0
-        self._enemies_leaked = 0
-        self._game_phase = GamePhase.Running
-
-        self._label = arcade.Text(
-            text="",
-            start_x=World.Width // 2,
-            start_y=World.Height // 2,
-            color=arcade.color.WHITE,
-            font_size=36,
-            align="left",
-            font_name="Roboto",
-        )
-        self._label.visible = False
-
-    def render(self):
-        self.update_enemies(1 / 60)
-        # Draw our sprites
-        # self.wall_list.draw()
-        self.scene.add_sprite_list(
-            name="enemies", use_spatial_hash=False, sprite_list=self.enemies
-        )
-
-        self.scene.draw()
-        if self._label.visible:
-            self._label.draw()
+#
+# class BaseMap():
+#
+#     def __init__(self):
+#         self.active_impressions = []
+#         #impressions_spawn_plan
