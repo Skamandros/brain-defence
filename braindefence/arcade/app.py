@@ -42,7 +42,7 @@ class BrainDefence(arcade.Window):
 
         for tileobject in object_list["Level1Map"]:
             coords = tileobject.shape
-
+            print(coords)
             in_coords = (
                 (x > coords[0][0])
                 and (x < coords[1][0])
