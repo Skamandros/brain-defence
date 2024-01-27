@@ -1,10 +1,7 @@
 import arcade
 from pathlib import Path
 
-from braindefence.arcade.levels import LevelOneMap
 from constants import *
-
-from braindefence import RESOURCE_DIR
 
 
 class BrainDefence(arcade.Window):
