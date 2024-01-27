@@ -2,7 +2,7 @@ import arcade
 from pathlib import Path
 
 from constants import *
-from entity import Enemy
+from entities.impressions import Impression
 
 
 class GamePhase(Enum):
@@ -93,7 +93,7 @@ class BrainDefence(arcade.Window):
         self._timeSinceSpawn += dt
         if self._timeSinceSpawn > World.SpawnRateSeconds:
             self._timeSinceSpawn = 0
-            enemy = Enemy(Path("../resources/minion-template.png").resolve(), 0.1)
+            enemy = Impression(Path("../resources/minion-template.png").resolve(), 0.1)
             self.enemies.append(enemy)
         for i, enemy in enumerate(self.enemies):
             enemy.update(dt)
