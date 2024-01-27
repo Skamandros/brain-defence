@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="11" tilewidth="128" tileheight="128" infinite="0" nextlayerid="8" nextobjectid="4">
  <tileset firstgid="1" source="../tiles/background-tiles.tsx"/>
- <tileset firstgid="7" name="Background" tilewidth="1" tileheight="1" tilecount="0" columns="0"/>
- <tileset firstgid="7" name="Start &amp; End" tilewidth="256" tileheight="256" tilecount="2" columns="0">
-  <grid orientation="orthogonal" width="1" height="1"/>
-  <tile id="0">
-   <image width="256" height="256" source="../../../brain-defence/resources/brain.png"/>
-  </tile>
-  <tile id="1">
-   <image width="137" height="137" source="../../../brain-defence/resources/eye.png"/>
-  </tile>
- </tileset>
- <tileset firstgid="9" source="../../../brain-defence/assets/background-tiles.tsx"/>
  <layer id="1" name="background" width="20" height="11">
   <data encoding="csv">
 6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
