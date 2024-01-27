@@ -8,7 +8,6 @@ from braindefence.arcade.gamephase import GamePhase
 
 
 class BaseMap:
-
     def __init__(self, level):
         self._timeSinceSpawn = None
         self._game_phase = None
@@ -39,7 +38,6 @@ class BaseMap:
 
         # initial map rendering
         self.render_map()
-
 
     def enemy_leaked(self):
         self._enemies_leaked += 1
@@ -76,7 +74,6 @@ class BaseMap:
         super()
 
     def render_map(self):
-
         # Name of map file to load
         map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
 
@@ -127,7 +124,6 @@ class BaseMap:
 
     def render(self):
         self.update_enemies(1 / 60)
-        print(len(list(self.enemies)))
         # Draw our sprites
         # self.wall_list.draw()
         self.scene.add_sprite_list(
