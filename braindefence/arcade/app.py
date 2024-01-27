@@ -62,6 +62,9 @@ class BrainDefence(arcade.Window):
         # print(object_list)
         # mats = arcade.get_sprites_at_point((x, y), sprite_lists)
 
+    def on_update(self, delta_time: float):
+        self.current_map.update(delta_time)
+
 
 def main():
     """Main function"""

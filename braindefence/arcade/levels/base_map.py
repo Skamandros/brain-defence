@@ -3,7 +3,6 @@ import arcade
 from braindefence.arcade.constants import World, TILE_SCALING
 
 from braindefence import RESOURCE_DIR
-from braindefence.arcade.entities.impressions import Impression
 from braindefence.arcade.gamephase import GamePhase
 
 
