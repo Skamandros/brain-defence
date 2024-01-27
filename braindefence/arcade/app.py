@@ -47,6 +47,7 @@ class BrainDefence(arcade.Window):
             y2 = World.Height + y2
             print(x1, x2, y1, y2)
             print(coords)
+            # don't ask why coordinates are switched, I don't know
             in_coords = (x > x1) and (x < x2) and (y > y2) and (y < y1)
             if in_coords:
                 print("HERE")
