@@ -63,6 +63,9 @@ class BrainDefence(arcade.Window):
     def on_update(self, delta_time: float):
         self.current_map.update(delta_time)
 
+    def on_update(self, delta_time: float):
+        self.current_map.update(delta_time)
+
 
 def main():
     """Main function"""
