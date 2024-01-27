@@ -9,7 +9,8 @@ LEFT_FACING = 1
 class World:
     Width = 1080
     Height = 760
-    SpawnRateSeconds = 3
+    SpawnRateSeconds = 1
+    Goal = (0.85 * Width, 0.85 * Height)
 
 
 class BatchNames(Enum):

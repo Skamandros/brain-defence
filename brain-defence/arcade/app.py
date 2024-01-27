@@ -11,11 +11,6 @@ class GamePhase(Enum):
     Lost = 2
 
 
-defaultEnemy = Enemy(
-    Path("../resources/default/default.png").resolve(), CHARACTER_SCALING
-)
-
-
 class BrainDefence(arcade.Window):
     """
     Main application class.
@@ -47,9 +42,8 @@ class BrainDefence(arcade.Window):
         self.scene = arcade.Scene()
 
         # Create the Sprite lists
-        self.background_batche = arcade.SpriteList()
-        self.entity_batch = arcade.SpriteList(use_spatial_hash=True)
-        self.projectile_batch = arcade.SpriteList(use_spatial_hash=True)
+        self.enemies = arcade.SpriteList()
+        self.towers = arcade.SpriteList(use_spatial_hash=True)
         self.HUD_batch = arcade.SpriteList()
 
         # Set up the spawn, specifically placing it at these coordinates.
@@ -65,11 +59,6 @@ class BrainDefence(arcade.Window):
         self.brain.center_x = World.Width * 0.9
         self.brain.center_y = World.Height * 0.9
         self.scene.add_sprite("Brain", self.brain)
-
-        self.enemies = []
-        self.enemies.append(defaultEnemy)
-        for i, enemy in enumerate(self.enemies):
-            self.scene.add_sprite(f"enemy{i:d}", enemy)
 
         self._enemies_killed = 0
         self._enemies_leaked = 0
@@ -104,29 +93,32 @@ class BrainDefence(arcade.Window):
         self._timeSinceSpawn += dt
         if self._timeSinceSpawn > World.SpawnRateSeconds:
             self._timeSinceSpawn = 0
-            self.enemies.append(defaultEnemy)
+            enemy = Enemy(Path("../resources/minion-template.png").resolve(), 0.1)
+            self.enemies.append(enemy)
         for i, enemy in enumerate(self.enemies):
             enemy.update(dt)
             if enemy.killed():
-                self.enemies.remove(enemy)
                 self.enemy_killed()
-            elif enemy.passed():
                 self.enemies.remove(enemy)
+            elif enemy.passed():
                 self.enemy_leaked()
+                self.enemies.remove(enemy)
 
     def on_draw(self):
         """Render the screen."""
 
         # Clear the screen to the background color
         self.clear()
-
+        self.update_enemies(1 / 60)
+        print(len(list(self.enemies)))
         # Draw our sprites
         # self.wall_list.draw()
+        self.scene.add_sprite_list(
+            name="enemies", use_spatial_hash=False, sprite_list=self.enemies
+        )
         self.scene.draw()
         if self._label.visible:
             self._label.draw()
-
-        self.update_enemies(1 / 60)
 
 
 def main():
