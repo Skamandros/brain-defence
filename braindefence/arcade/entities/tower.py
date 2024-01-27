@@ -1,5 +1,5 @@
 import arcade
-from entity import Entity
+from braindefence.arcade.entities import Entity
 
 
 class Tower(Entity):

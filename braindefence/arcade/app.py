@@ -2,7 +2,7 @@ import arcade
 from pathlib import Path
 
 from constants import *
-from entities.impressions import Impression
+from braindefence.arcade.entities import Impression
 
 
 class GamePhase(Enum):

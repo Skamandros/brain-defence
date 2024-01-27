@@ -7,7 +7,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "brain-defence"
+name = "braindefence"
 version = "0.0.0"
 dynamic = ["dependencies"]
 requires-python = ">=3.11"

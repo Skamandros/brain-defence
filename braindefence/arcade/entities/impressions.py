@@ -1,5 +1,5 @@
-from entity import Entity
-from ..constants import World
+from braindefence.arcade.entities import Entity
+from braindefence.arcade.constants import World
 
 
 class Impression(Entity):

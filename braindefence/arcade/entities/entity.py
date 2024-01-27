@@ -1,5 +1,5 @@
 import arcade
-from ..constants import *
+from braindefence.arcade.constants import *
 
 
 class Entity(arcade.Sprite):
@@ -15,4 +15,3 @@ class Entity(arcade.Sprite):
         self.character_face_direction = RIGHT_FACING
         self.center_x = World.Width // 2
         self.center_y = World.Height // 2
-
