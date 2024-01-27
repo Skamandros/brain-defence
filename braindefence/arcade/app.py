@@ -40,21 +40,20 @@ class BrainDefence(arcade.Window):
         # currenty key just for testing  == Level1Map
         print(x, y)
 
-        for tileobject in object_list["Level1Map"]:
+        for tileobject in object_list["TowerSpots"]:
             coords = tileobject.shape
+            x1, x2, y1, y2 = coords[0][0], coords[1][0], coords[0][1], coords[2][1]
+            y1 = World.Height + y1
+            y2 = World.Height + y2
+            print(x1, x2, y1, y2)
             print(coords)
-            in_coords = (
-                (x > coords[0][0])
-                and (x < coords[1][0])
-                and (y > (-1) * coords[0][1])
-                and (y < (-1) * coords[2][1])
-            )
+            in_coords = (x > x1) and (x < x2) and (y > y2) and (y < y1)
             if in_coords:
                 print("HERE")
                 image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
                 test = arcade.Sprite(image_source.resolve(), 1)
-                test.center_x = (coords[0][0] + coords[1][0]) / 2
-                test.center_y = -(coords[0][1] + coords[2][1]) / 2
+                test.center_x = (x1 + x2) / 2
+                test.center_y = (y1 + y2) / 2
                 self.current_map.scene.add_sprite("test", test)
 
         # print(object_list)
