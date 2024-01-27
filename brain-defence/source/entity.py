@@ -6,16 +6,29 @@ import rendering
 from tower_types import *
 from projectile_types import *
 from enemy_types import *
+from constants import BatchNames
+from rendering import rendering_batches
+
+
+class EntityEventHandler:
+    @abstractmethod
+    def enemy_killed(self):
+        pass
+
+    @abstractmethod
+    def enemy_leaked(self):
+        pass
 
 
 class EntityContainer:
-    def __init__(self):
+    def __init__(self, callback: EntityEventHandler):
         self.enemies = []
         self.enemies.append(Enemy(DefaultEnemy()))
         self.towers = []
         self.towers.append(Tower(300, 300, self, BaseTower()))
         self.projectiles = []
         self._timeSinceSpawn = 0
+        self._callback = callback
 
     def update(self, dt):
         self._timeSinceSpawn += dt
@@ -24,20 +37,24 @@ class EntityContainer:
             self.enemies.append(Enemy(DefaultEnemy()))
             logging.debug("Enemy spawned")
         for enemy in self.enemies:
-            enemy.update(dt)
             if enemy.killed():
                 self.enemies.remove(enemy)
+                self._callback.enemy_killed()
             elif enemy.passed():
                 self.enemies.remove(enemy)
+                self._callback.enemy_leaked()
                 logging.info("Enemy has reached the brain!")
+            else:
+                enemy.update(dt)
         for tower in self.towers:
             tower.update(dt)
         for projectile in self.projectiles:
-            projectile.update(dt)
             if projectile.passed():
                 projectile.targetEnemy.health -= 1
                 self.projectiles.remove(projectile)
                 logging.debug("Projectile has reached the enemy!")
+            else:
+                projectile.update(dt)
 
 
 class Enemy:
@@ -53,8 +70,8 @@ class Enemy:
     def update(self, dt):
         delta_x = self._targetX - self.x
         delta_y = self._targetY - self.y
-        self.x += (delta_x * self._enemy_type.speed) / abs(delta_x + delta_y)
-        self.y += (delta_y * self._enemy_type.speed) / abs(delta_x + delta_y)
+        self.x += (delta_x * self._enemy_type.speed) / (abs(delta_x) + abs(delta_y))
+        self.y += (delta_y * self._enemy_type.speed) / (abs(delta_x) + abs(delta_y))
         self._drawable.x = self.x
         self._drawable.y = self.y
 
@@ -107,8 +124,8 @@ class Projectile:
     def update(self, dt):
         delta_x = self.targetEnemy.x - self.x
         delta_y = self.targetEnemy.y - self.y
-        self.x += (delta_x * self._projectile_type.speed) / abs(delta_x + delta_y)
-        self.y += (delta_y * self._projectile_type.speed) / abs(delta_x + delta_y)
+        self.x += (delta_x * self._projectile_type.speed) / (abs(delta_x) + abs(delta_y))
+        self.y += (delta_y * self._projectile_type.speed) / (abs(delta_x) + abs(delta_y))
         self._drawable.x = self.x
         self._drawable.y = self.y
 

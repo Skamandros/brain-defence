@@ -1,10 +1,4 @@
-from abc import abstractmethod
-
-from pyglet import shapes
 from projectile_types import *
-
-from rendering import rendering_batches
-from constants import BatchNames
 
 
 class TowerType:
