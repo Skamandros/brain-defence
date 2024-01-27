@@ -23,7 +23,7 @@ class EntityEventHandler:
 class EntityContainer:
     def __init__(self, callback: EntityEventHandler):
         self.enemies = []
-        self.enemies.append(Enemy(DefaultEnemy()))
+        self.enemies.append(Enemy(DefaultEnemy(), 60, 60))
         self.towers = []
         self.towers.append(Tower(300, 300, self, BaseTower()))
         self.projectiles = []
@@ -34,7 +34,7 @@ class EntityContainer:
         self._timeSinceSpawn += dt
         if self._timeSinceSpawn > World.SpawnRateSeconds:
             self._timeSinceSpawn = 0
-            self.enemies.append(Enemy(DefaultEnemy()))
+            self.enemies.append(Enemy(DefaultEnemy(), 60, 60))
             logging.debug("Enemy spawned")
         for enemy in self.enemies:
             if enemy.killed():
@@ -58,12 +58,12 @@ class EntityContainer:
 
 
 class Enemy:
-    def __init__(self, enemy_type: EnemyType):
-        self.x = 0
-        self.y = 0
+    def __init__(self, enemy_type: EnemyType, x=0, y=0):
+        self.x = x
+        self.y = y
         self.health = enemy_type.max_health
-        self._targetX = World.Width
-        self._targetY = World.Height
+        self._targetX = World.Width - 120
+        self._targetY = World.Height - 60
         self._drawable = enemy_type.drawable(self.x, self.y, batch=rendering.rendering_batches[BatchNames.Entity_Batch])
         self._enemy_type = enemy_type
 

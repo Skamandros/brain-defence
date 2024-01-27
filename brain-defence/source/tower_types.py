@@ -24,7 +24,7 @@ class TowerType:
 
 class BaseTower(TowerType):
     def __init__(self):
-        super().__init__(.5, 200)
+        super().__init__(.65, 200)
 
     def drawable(self, x, y, batch):
         return shapes.Rectangle(x, y, 10, 10, batch=batch)
