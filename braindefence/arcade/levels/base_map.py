@@ -8,7 +8,12 @@ from braindefence.arcade.gamephase import GamePhase
 
 
 class BaseMap:
+
     def __init__(self, level):
+        self.tile_map = None
+        self.spawn_point = None
+        self.destination = None
+
         self._timeSinceSpawn = None
         self._game_phase = None
         self._enemies_leaked = None
@@ -32,7 +37,7 @@ class BaseMap:
         arcade.set_background_color(arcade.csscolor.CORNFLOWER_BLUE)
 
         # Create the Sprite lists
-        self.enemies = arcade.SpriteList()
+        self.impressions = arcade.SpriteList()
         self.towers = arcade.SpriteList(use_spatial_hash=True)
         self.HUD_batch = arcade.SpriteList()
 
@@ -40,40 +45,21 @@ class BaseMap:
         self.render_map()
 
     def enemy_leaked(self):
-        self._enemies_leaked += 1
-        if self._enemies_leaked > 5:
+        self._impressions_leaked += 1
+        if self._impressions_leaked > 5:
             self._game_phase = GamePhase.Lost
             self._label.text = "Defeat!"
             self._label.visible = True
 
-    def update_enemies(self, dt):
-        self._timeSinceSpawn += dt
-        if self._timeSinceSpawn > World.SpawnRateSeconds:
-            self._timeSinceSpawn = 0
-            enemy = Impression(
-                RESOURCE_DIR.joinpath("impressions").joinpath("impression-1-bad.png").resolve(),1
-            )
-            self.enemies.append(enemy)
-        for i, enemy in enumerate(self.enemies):
-            enemy.update(dt)
-            if enemy.killed():
-                self.enemy_killed()
-                self.enemies.remove(enemy)
-            elif enemy.passed():
-                self.enemy_leaked()
-                self.enemies.remove(enemy)
-
-    def enemy_killed(self):
-        self._enemies_killed += 1
-        if self._enemies_killed > 20:
+    def evaluate_win_condition(self):
+        self._brain_status += 1
+        if self._brain_status > 20:
             self._game_phase = GamePhase.Won
             self._label.text = "Victory!"
             self._label.visible = True
 
-    def update(self, dt):
-        super()
-
     def render_map(self):
+
         # Name of map file to load
         map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
 
@@ -107,8 +93,7 @@ class BaseMap:
         self.brain.center_y = World.Height * 0.9
         self.scene.add_sprite("Brain", self.brain)
 
-        self._enemies_killed = 0
-        self._enemies_leaked = 0
+        self._impressions_leaked = 0
         self._game_phase = GamePhase.Running
 
         self._label = arcade.Text(
@@ -123,13 +108,21 @@ class BaseMap:
         self._label.visible = False
 
     def render(self):
-        self.update_enemies(1 / 60)
+        #self.update_enemies(1 / 60)
+        # print(len(list(self.enemies)))
         # Draw our sprites
         # self.wall_list.draw()
         self.scene.add_sprite_list(
-            name="enemies", use_spatial_hash=False, sprite_list=self.enemies
+            name="enemies", use_spatial_hash=False, sprite_list=self.impressions
         )
 
         self.scene.draw()
         if self._label.visible:
             self._label.draw()
+
+    def spawn_minions(self, dt):
+        pass
+
+    def update(self, delta_time):
+        self.render()
+        pass
