@@ -4,15 +4,14 @@ import rendering
 
 from ingame import GameScreen
 from constants import *
+import arcade
 
 pyglet.resource.path = ["../resources"]
 pyglet.resource.reindex()
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.StreamHandler()
-    ]
+    handlers=[logging.StreamHandler()],
 )
 rendering.rendering_batches[BatchNames.Background_Batch] = pyglet.graphics.Batch()
 rendering.rendering_batches[BatchNames.Entity_Batch] = pyglet.graphics.Batch()
