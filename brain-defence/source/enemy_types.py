@@ -4,8 +4,9 @@ from pyglet import shapes
 
 
 class EnemyType:
-    def __init__(self, speed):
+    def __init__(self, speed=3, max_health=5):
         self.speed = speed
+        self.max_health = max_health
 
     @abstractmethod
     def drawable(self, x, y, batch):
@@ -20,8 +21,5 @@ class EnemyType:
 
 
 class DefaultEnemy(EnemyType):
-    def __init__(self):
-        super().__init__(3)
-
     def drawable(self, x, y, batch):
         return shapes.Circle(x=x, y=y, radius=10, color=(0, 0, 255), batch=batch)

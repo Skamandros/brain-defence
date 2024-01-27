@@ -25,7 +25,9 @@ class EntityContainer:
             logging.debug("Enemy spawned")
         for enemy in self.enemies:
             enemy.update(dt)
-            if enemy.passed():
+            if enemy.killed():
+                self.enemies.remove(enemy)
+            elif enemy.passed():
                 self.enemies.remove(enemy)
                 logging.info("Enemy has reached the brain!")
         for tower in self.towers:
@@ -33,6 +35,7 @@ class EntityContainer:
         for projectile in self.projectiles:
             projectile.update(dt)
             if projectile.passed():
+                projectile.targetEnemy.health -= 1
                 self.projectiles.remove(projectile)
                 logging.debug("Projectile has reached the enemy!")
 
@@ -41,21 +44,25 @@ class Enemy:
     def __init__(self, enemy_type: EnemyType):
         self.x = 0
         self.y = 0
-        self.targetX = World.Width
-        self.targetY = World.Height
-        self.drawable = enemy_type.drawable(self.x, self.y, batch=rendering.rendering_batches[BatchNames.Entity_Batch])
-        self.enemy_type = enemy_type
+        self.health = enemy_type.max_health
+        self._targetX = World.Width
+        self._targetY = World.Height
+        self._drawable = enemy_type.drawable(self.x, self.y, batch=rendering.rendering_batches[BatchNames.Entity_Batch])
+        self._enemy_type = enemy_type
 
     def update(self, dt):
-        delta_x = self.targetX - self.x
-        delta_y = self.targetY - self.y
-        self.x += (delta_x * self.enemy_type.speed) / abs(delta_x + delta_y)
-        self.y += (delta_y * self.enemy_type.speed) / abs(delta_x + delta_y)
-        self.drawable.x = self.x
-        self.drawable.y = self.y
+        delta_x = self._targetX - self.x
+        delta_y = self._targetY - self.y
+        self.x += (delta_x * self._enemy_type.speed) / abs(delta_x + delta_y)
+        self.y += (delta_y * self._enemy_type.speed) / abs(delta_x + delta_y)
+        self._drawable.x = self.x
+        self._drawable.y = self.y
+
+    def killed(self):
+        return self.health <= 0
 
     def passed(self):
-        return abs(self.x - self.targetX) < 10 and abs(self.y - self.targetY < 10)
+        return abs(self.x - self._targetX) < 10 and abs(self.y - self._targetY < 10)
 
 
 class Tower:
@@ -63,26 +70,26 @@ class Tower:
         self.drawable = tower_type.drawable(x, y, rendering_batches[BatchNames.Entity_Batch])
         self.x = x
         self.y = y
-        self.fireCooldown = 0
-        self.targetEnemy = None
-        self.container = container
-        self.tower_type = tower_type
+        self._fireCooldown = 0
+        self._targetEnemy = None
+        self._container = container
+        self._tower_type = tower_type
 
     def update(self, dt):
-        if self.targetEnemy is None:
-            best_distance = self.tower_type.attack_range
-            for enemy in self.container.enemies:
+        if self._targetEnemy is None:
+            best_distance = self._tower_type.attack_range
+            for enemy in self._container.enemies:
                 distance = self.calc_distance(enemy)
                 if best_distance < 0 or distance < best_distance:
-                    self.targetEnemy = enemy
-        elif self.targetEnemy not in self.container.enemies or self.calc_distance(
-                self.targetEnemy) > self.tower_type.attack_range:
-            self.targetEnemy = None
-        self.fireCooldown = max(0, self.fireCooldown - dt)
-        if self.fireCooldown == 0 and self.targetEnemy is not None:
-            self.container.projectiles.append(
-                Projectile(self.x, self.y, self.targetEnemy, self.tower_type.get_projectile_type()))
-            self.fireCooldown = self.tower_type.attack_rate
+                    self._targetEnemy = enemy
+        elif self._targetEnemy not in self._container.enemies or self.calc_distance(
+                self._targetEnemy) > self._tower_type.attack_range:
+            self._targetEnemy = None
+        self._fireCooldown = max(0, self._fireCooldown - dt)
+        if self._fireCooldown == 0 and self._targetEnemy is not None:
+            self._container.projectiles.append(
+                Projectile(self.x, self.y, self._targetEnemy, self._tower_type.get_projectile_type()))
+            self._fireCooldown = self._tower_type.attack_rate
 
     def calc_distance(self, enemy):
         return math.sqrt(pow(self.x - enemy.x, 2) + pow(self.y - enemy.y, 2))
@@ -92,18 +99,18 @@ class Projectile:
     def __init__(self, x, y, target: Enemy, projectile_type: ProjectileType):
         self.x = x
         self.y = y
-        self.drawable = projectile_type.drawable(x, y,
-                                                 batch=rendering.rendering_batches[BatchNames.Projectile_Batch])
         self.targetEnemy = target
-        self.projectile_type = projectile_type
+        self._drawable = projectile_type.drawable(x, y,
+                                                  batch=rendering.rendering_batches[BatchNames.Projectile_Batch])
+        self._projectile_type = projectile_type
 
     def update(self, dt):
         delta_x = self.targetEnemy.x - self.x
         delta_y = self.targetEnemy.y - self.y
-        self.x += (delta_x * self.projectile_type.speed) / abs(delta_x + delta_y)
-        self.y += (delta_y * self.projectile_type.speed) / abs(delta_x + delta_y)
-        self.drawable.x = self.x
-        self.drawable.y = self.y
+        self.x += (delta_x * self._projectile_type.speed) / abs(delta_x + delta_y)
+        self.y += (delta_y * self._projectile_type.speed) / abs(delta_x + delta_y)
+        self._drawable.x = self.x
+        self._drawable.y = self.y
 
     def passed(self):
         return abs(self.x - self.targetEnemy.x) < 5 and abs(self.y - self.targetEnemy.y < 5)

@@ -4,7 +4,7 @@ from pyglet import shapes
 
 
 class ProjectileType:
-    def __init__(self, speed):
+    def __init__(self, speed=4):
         self.speed = speed
 
     @abstractmethod
@@ -20,8 +20,5 @@ class ProjectileType:
 
 
 class DefaultProjectile(ProjectileType):
-    def __init__(self):
-        super().__init__(4)
-        
     def drawable(self, x, y, batch):
         return shapes.Circle(x, y, 2, color=(255, 0, 0), batch=batch)
