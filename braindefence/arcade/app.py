@@ -3,6 +3,7 @@ from pathlib import Path
 
 from constants import *
 from braindefence.arcade.entities import Impression
+from braindefence import RESOURCE_DIR
 
 
 class GamePhase(Enum):
@@ -44,7 +45,7 @@ class BrainDefence(arcade.Window):
         self.HUD_batch = arcade.SpriteList()
 
         # Name of map file to load
-        map_name = Path("../resources/maps/Level-one.tmx").resolve()
+        map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
 
         # Layer specific options are defined based on Layer names in a dictionary
         # Doing this will make the SpriteList for the platforms layer
@@ -63,14 +64,14 @@ class BrainDefence(arcade.Window):
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
         # Set up the spawn, specifically placing it at these coordinates.
-        image_source = Path("../resources/eye.png")
+        image_source = RESOURCE_DIR.joinpath("eye.png").resolve()
         self.spawn = arcade.Sprite(image_source.resolve(), 1)
         self.spawn.center_x = World.Width * 0.1
         self.spawn.center_y = World.Height * 0.1
         self.scene.add_sprite("Spawn", self.spawn)
 
         # Set up the spawn, specifically placing it at these coordinates.
-        image_source = Path("../resources/brain.png")
+        image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
         self.brain = arcade.Sprite(image_source.resolve(), 1)
         self.brain.center_x = World.Width * 0.9
         self.brain.center_y = World.Height * 0.9
@@ -109,7 +110,9 @@ class BrainDefence(arcade.Window):
         self._timeSinceSpawn += dt
         if self._timeSinceSpawn > World.SpawnRateSeconds:
             self._timeSinceSpawn = 0
-            enemy = Impression(Path("../resources/minion-template.png").resolve(), 0.1)
+            enemy = Impression(
+                RESOURCE_DIR.joinpath("minion-template.png").resolve(), 0.1
+            )
             self.enemies.append(enemy)
         for i, enemy in enumerate(self.enemies):
             enemy.update(dt)
