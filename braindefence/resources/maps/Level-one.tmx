@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-up" width="62" height="34" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="17">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="left-up" width="62" height="34" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="22">
  <tileset firstgid="1" name="Towers" tilewidth="128" tileheight="128" tilecount="1" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
   <tile id="0">
@@ -146,6 +146,23 @@
    <properties>
     <property name="isTowerPlaced" type="bool" value="false"/>
    </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="5" name="WayPoints">
+  <object id="19" x="1775.5" y="79">
+   <point/>
+  </object>
+  <object id="18" x="1775" y="303">
+   <point/>
+  </object>
+  <object id="17" x="1199.5" y="302.5">
+   <point/>
+  </object>
+  <object id="20" x="1199" y="687">
+   <point/>
+  </object>
+  <object id="21" x="111" y="687">
+   <point/>
   </object>
  </objectgroup>
 </map>
