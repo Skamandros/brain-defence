@@ -1,28 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="11" tilewidth="128" tileheight="128" infinite="0" nextlayerid="8" nextobjectid="4">
- <tileset firstgid="1" name="background-tiles" tilewidth="128" tileheight="128" tilecount="5" columns="0">
-  <grid orientation="orthogonal" width="1" height="1"/>
-  <tile id="0">
-   <image width="128" height="128" source="../../../brain-defence/assets/background-tile-2.png"/>
-  </tile>
-  <tile id="1">
-   <image width="128" height="128" source="../../../brain-defence/assets/background-tile-3.png"/>
-  </tile>
-  <tile id="2">
-   <image width="128" height="128" source="../../../brain-defence/assets/tile-background-1.png"/>
-  </tile>
-  <tile id="3">
-   <image width="128" height="128" source="../../../brain-defence/assets/path-tile.png"/>
-  </tile>
-  <tile id="4" type="TowerSpot">
-   <properties>
-    <property name="isTowerPlaced" type="bool" value="false"/>
-   </properties>
-   <image width="128" height="128" source="../../../brain-defence/resources/tower-tile-base.png"/>
-  </tile>
- </tileset>
- <tileset firstgid="6" name="Background" tilewidth="1" tileheight="1" tilecount="0" columns="0"/>
- <tileset firstgid="6" name="Start &amp; End" tilewidth="256" tileheight="256" tilecount="2" columns="0">
+ <tileset firstgid="1" source="../tiles/background-tiles.tsx"/>
+ <tileset firstgid="7" name="Background" tilewidth="1" tileheight="1" tilecount="0" columns="0"/>
+ <tileset firstgid="7" name="Start &amp; End" tilewidth="256" tileheight="256" tilecount="2" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
   <tile id="0">
    <image width="256" height="256" source="../../../brain-defence/resources/brain.png"/>
@@ -31,29 +11,30 @@
    <image width="137" height="137" source="../../../brain-defence/resources/eye.png"/>
   </tile>
  </tileset>
+ <tileset firstgid="9" source="../../../brain-defence/assets/background-tiles.tsx"/>
  <layer id="1" name="background" width="20" height="11">
   <data encoding="csv">
-2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,4,4,2,
-2,2,2,2,2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,2,
-2,2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,4,2,2,2,
-2,2,2,2,2,2,2,2,2,2,4,4,4,4,4,2,2,2,2,2,
-2,2,2,2,2,2,2,2,2,2,4,4,2,2,2,2,2,2,2,2,
-2,2,2,2,2,4,4,4,4,4,4,4,2,2,2,2,2,2,2,2,
-2,2,2,4,4,4,4,4,4,2,2,2,2,2,2,2,2,2,2,2,
-2,2,4,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-2,2,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-2,2,4,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6
 </data>
  </layer>
  <objectgroup id="2" name="Towers"/>
  <objectgroup id="7" name="Level1Map">
-  <object id="2" name="EndPoint" x="1472" y="348" width="380" height="384">
+  <object id="2" name="EndPoint" x="1452" y="212" width="380" height="384">
    <properties>
     <property name="EndPoint" type="bool" value="true"/>
    </properties>
   </object>
-  <object id="3" name="StartPoint" x="676" y="804" width="324" height="284">
+  <object id="3" name="StartPoint" x="680" y="588" width="324" height="284">
    <properties>
     <property name="isStartPoint" type="bool" value="true"/>
    </properties>
