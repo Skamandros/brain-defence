@@ -77,6 +77,19 @@ class BrainDefence(arcade.Window):
         self.brain.center_y = World.Height * 0.9
         self.scene.add_sprite("Brain", self.brain)
 
+        # Set up the protagonist
+        image_source = RESOURCE_DIR.joinpath("images/protagonist_nobg.png").resolve()
+        protagonist = arcade.Sprite(image_source.resolve(), .4)
+        protagonist.center_x = World.Width * 0.9
+        protagonist.center_y = protagonist.height / 2
+        self.scene.add_sprite("Protagonist", protagonist)
+
+        bg_music = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_1.wav"), True)
+        arcade.play_sound(bg_music, looping=True, volume=1)
+
+        level01intro = arcade.load_sound(RESOURCE_DIR.joinpath("sound/Level01_Intro.mp3"), True)
+        arcade.play_sound(level01intro)
+
         self._enemies_killed = 0
         self._enemies_leaked = 0
         self._game_phase = GamePhase.Running
