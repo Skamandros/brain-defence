@@ -8,14 +8,13 @@ from braindefence.arcade.HUD.hud import IndicatorBar
 from braindefence.arcade.constants import *
 
 
-class LevelOneMap(BaseMap):
+class LevelFourMap(BaseMap):
     def __init__(self):
         super().__init__(
-            RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve(), maxBrainHealth=500, minBrainHealth=0, currentBrainHealth=500, level=1
+            RESOURCE_DIR.joinpath("maps/Level-four.tmx").resolve(), maxBrainHealth=500, minBrainHealth=0, currentBrainHealth=500, level=4
         )
         self.impressions_spawned = 0
-        self._max_spawned_impressions = 25
-
+        self._max_spawned_impressions = 60
 
     def spawn_minions(self, dt):
         if self.impressions_spawned >= self._max_spawned_impressions:

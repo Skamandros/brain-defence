@@ -4,7 +4,7 @@ import arcade
 from pathlib import Path
 
 from braindefence.arcade import GamePhase
-from braindefence.arcade.levels import LevelOneMap
+from braindefence.arcade.levels import LevelOneMap, LevelTwoMap, LevelThreeMap, LevelFourMap
 from braindefence.arcade.sound import SoundManager, BackgroundMusic
 from constants import *
 
@@ -23,11 +23,13 @@ class BrainDefence(arcade.View):
         # Call the parent class and set up the window
         super().__init__()
 
+        self.levels = [LevelOneMap(), LevelTwoMap(), LevelThreeMap(), LevelFourMap()]
         self.current_map = None
         self.gui_camera = None
         self.imagination_score = 0
         self.increment_score = 0
         self.sound_manager = None
+        self.level = 0
 
         # Set up the protagonist
         image_source = RESOURCE_DIR.joinpath("images/protagonist_nobg.png").resolve()
@@ -40,12 +42,13 @@ class BrainDefence(arcade.View):
         except:
             pass
 
-    def setup(self):
+    def setup(self, level=0):
         """Set up the game here. Call this function to restart the game."""
 
         # hard coded for map 1 starter
         # TODO: replace with menu and scene handling
-        self.current_map = LevelOneMap()
+        self.current_map = self.levels[level]
+        self.current_map.start_level()
 
         # Set up the GUI Camera
         self.camera = arcade.Camera(self.window.width, self.window.height)
@@ -93,12 +96,17 @@ class BrainDefence(arcade.View):
         self.current_map.check_on_click(x, y, button, key_modifiers)
 
     def on_update(self, delta_time: float):
-        if self.current_map.game_phase is GamePhase.LevelEnded:
+        if (self.current_map.game_phase is GamePhase.LevelEnded) or (self.current_map.game_phase is GamePhase.Lost):
             game_over_view = GameOverView()
             self.window.show_view(game_over_view)
-        elif self.current_map.game_phase is GamePhase.Lost:
-            game_over_view = GameOverView()
-            self.window.show_view(game_over_view)
+            self.level += 1
+            if len(self.levels) -1 == self.level:
+                game_over_view = GameOverView()
+                self.window.show_view(game_over_view)
+            else:
+                self.window.show_view(game_over_view)
+                self.window.show_view(self)
+                self.setup(self.level)
         else:
             self.current_map.update(delta_time)
             if (self.current_map._timeSinceSpawn % 1) < 1e-2:
@@ -144,7 +152,7 @@ class MainMenu(arcade.View):
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """Use a mouse press to advance to the 'game' view."""
         game_view = BrainDefence()
-        game_view.setup()
+        game_view.setup(level=0)
         self.window.show_view(game_view)
 
 

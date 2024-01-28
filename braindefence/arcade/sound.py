@@ -71,7 +71,7 @@ class SoundManager:
             self.fade_progress += delta_time / 3
             self.bg_music[self.switch_from].volume = MUSIC_VOLUME - self.fade_progress * MUSIC_VOLUME
             self.bg_music[self.switch_to].volume = self.fade_progress * MUSIC_VOLUME
-            logging.info("Fade progress {}".format(self.fade_progress))
+            # logging.info("Fade progress {}".format(self.fade_progress))
 
     def play_intro_sound(self, level: int, variant: int = 1):
         self.current_sound = arcade.play_sound(self.intros[level - 1][variant - 1])

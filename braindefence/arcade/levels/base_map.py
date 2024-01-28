@@ -17,7 +17,7 @@ from braindefence.arcade.HUD.hud import IndicatorBar
 
 class BaseMap:
     def __init__(
-        self, map_name, maxBrainHealth=500, currentBrainHealth=0, minBrainHealth=-100
+        self, map_name, maxBrainHealth=500, currentBrainHealth=500, minBrainHealth=0
     , level=0):
         self.waypoints = None
         self.tower_positions = None
@@ -204,4 +204,7 @@ class BaseMap:
                     self.towers.append(newtower)
 
     def evaluate_win_condition(self):
+        pass
+
+    def start_level(self):
         pass
