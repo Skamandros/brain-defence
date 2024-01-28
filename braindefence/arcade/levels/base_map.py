@@ -48,25 +48,6 @@ class BaseMap:
         self.towers = arcade.SpriteList(use_spatial_hash=True)
         self.HUD_batch = arcade.SpriteList()
 
-        # initial map rendering
-        self.render_map()
-
-    def enemy_leaked(self):
-        self._impressions_leaked += 1
-        if self._impressions_leaked > 5:
-            self._game_phase = GamePhase.Lost
-            self._label.text = "Defeat!"
-            self._label.visible = True
-
-    def evaluate_win_condition(self):
-        self._brain_status += 1
-        if self._brain_status > 20:
-            self._game_phase = GamePhase.Won
-            self._label.text = "Victory!"
-            self._label.visible = True
-
-    def render_map(self):
-
         # Name of map file to load
         map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
 
@@ -130,13 +111,27 @@ class BaseMap:
         )
         self._label.visible = False
 
+    def enemy_leaked(self):
+        self._impressions_leaked += 1
+        if self._impressions_leaked > 5:
+            self._game_phase = GamePhase.Lost
+            self._label.text = "Defeat!"
+            self._label.visible = True
+
+    def evaluate_win_condition(self):
+        self._brain_status += 1
+        if self._brain_status > 20:
+            self._game_phase = GamePhase.Won
+            self._label.text = "Victory!"
+            self._label.visible = True
+
     def render(self):
         # self.update_enemies(1 / 60)
         # print(len(list(self.enemies)))
         # Draw our sprites
         # self.wall_list.draw()
         self.scene.add_sprite_list(
-            name="towers", use_spatial_hash=False, sprite_list=self.towers
+            name="towers", use_spatial_hash=True, sprite_list=self.towers
         )
         self.scene.add_sprite_list(
             name="enemies", use_spatial_hash=False, sprite_list=self.impressions

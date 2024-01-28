@@ -23,7 +23,6 @@ class BrainDefence(arcade.Window):
         # hard coded for map 1 starter
         # TODO: replace with menu and scene handling
         self.current_map = LevelOneMap()
-        self.current_map.render_map()
 
     def on_draw(self):
         """Render the screen."""
