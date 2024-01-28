@@ -27,7 +27,6 @@ class BrainDefence(arcade.Window):
         # hard coded for map 1 starter
         # TODO: replace with menu and scene handling
         self.current_map = LevelOneMap()
-        self.current_map.render_map()
 
         # Set up the GUI Camera
         self.gui_camera = arcade.Camera(self.width, self.height)
