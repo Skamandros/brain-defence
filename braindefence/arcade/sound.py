@@ -24,16 +24,15 @@ class SoundManager:
         self.fade_progress = 1
         self.sound_queue = []
 
-        track1 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_1-01.wav"), True)
-        logging.info("file: {}, info: {}".format(track1.file_name, track1.source.audio_format))
+        track1 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_1-01.mp3"), True)
         self.bg_music.append(arcade.play_sound(track1, looping=True, volume=1))
-        track2 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_2-01.wav"), True)
+        track2 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_2-01.mp3"), True)
         self.bg_music.append(arcade.play_sound(track2, looping=True, volume=0))
-        track3 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_3-01.wav"), True)
+        track3 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_3-01.mp3"), True)
         self.bg_music.append(arcade.play_sound(track3, looping=True, volume=0))
-        track4 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_4-01.wav"), True)
+        track4 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_4-01.mp3"), True)
         self.bg_music.append(arcade.play_sound(track4, looping=True, volume=0))
-        track5 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_5-01.wav"), True)
+        track5 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_5-01.mp3"), True)
         self.bg_music.append(arcade.play_sound(track5, looping=True, volume=0))
         for i, track in enumerate(self.bg_music):
             if i == self.bg_music_playing:
