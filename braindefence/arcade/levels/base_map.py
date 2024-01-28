@@ -200,7 +200,7 @@ class BaseMap:
                     # image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
                     # test = arcade.Sprite(image_source.resolve(), 1)
                     newtower.center_x = (tower_spot.x1 + tower_spot.x2) / 2
-                    newtower.center_y = (tower_spot.y1 + tower_spot.y2) / 2
+                    newtower.center_y = (tower_spot.y1 + tower_spot.y2) / 2 + 51 # magic number
                     self.towers.append(newtower)
 
     def evaluate_win_condition(self):
