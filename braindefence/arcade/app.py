@@ -33,8 +33,8 @@ class BrainDefence(arcade.Window):
         self.sound_manager = SoundManager()
 
         # a UIManager to handle the UI.
-        self.manager = arcade.gui.UIManager()
-        self.manager.enable()
+        # self.manager = arcade.gui.UIManager()
+        # self.manager.enable()
 
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
