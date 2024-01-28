@@ -14,6 +14,17 @@ from braindefence.arcade.HUD import RotatingIcon
 import pyglet
 
 
+class StoryEvent(Enum):
+    E1_1 = 0
+    E1_2 = 1
+    E2_1 = 2
+    E2_2 = 3
+    E3_1 = 4
+    E3_2 = 5
+    E4_1 = 6
+    E4_2 = 7
+
+
 class BrainDefence(arcade.View):
     """
     Main application class.
@@ -29,6 +40,7 @@ class BrainDefence(arcade.View):
         self.imagination_score = 0
         self.increment_score = 0
         self.sound_manager = None
+        self.story_events = []
         self.level = 0
 
         # Set up the protagonist
@@ -115,14 +127,45 @@ class BrainDefence(arcade.View):
                 self.increment_score = 0
             self.imagination_score += self.increment_score
             self.score_icon.update()
+            match self.current_map.level:
+                case 1:
+                    if self.current_map.currentBrainHealth < 375 and StoryEvent.E1_1 not in self.story_events:
+                        self.story_events.append(StoryEvent.E1_1)
+                        self.sound_manager.play_event_sound(1, 1)
+                        self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
+                    elif self.current_map.currentBrainHealth < 200 and StoryEvent.E1_2 not in self.story_events:
+                        self.story_events.append(StoryEvent.E1_2)
+                        self.sound_manager.play_event_sound(1, 2)
+                        self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
+                case 2:
+                    if self.current_map.currentBrainHealth < 350 and StoryEvent.E2_1 not in self.story_events:
+                        self.story_events.append(StoryEvent.E2_1)
+                        self.sound_manager.play_event_sound(2, 1)
+                        self.sound_manager.switch_bg_music(BackgroundMusic.Shocked)
+                    elif self.current_map.currentBrainHealth < 200 and StoryEvent.E2_2 not in self.story_events:
+                        self.story_events.append(StoryEvent.E2_2)
+                        self.sound_manager.play_event_sound(2, 2)
+                        self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
+                case 3:
+                    if self.current_map.currentBrainHealth < 350 and StoryEvent.E3_1 not in self.story_events:
+                        self.story_events.append(StoryEvent.E3_1)
+                        self.sound_manager.play_event_sound(3, 1)
+                        self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
+                    elif self.current_map.currentBrainHealth < 200 and StoryEvent.E3_2 not in self.story_events:
+                        self.story_events.append(StoryEvent.E3_2)
+                        self.sound_manager.play_event_sound(3, 2)
+                        self.sound_manager.switch_bg_music(BackgroundMusic.Default)
+                case 4:
+                    if self.current_map.currentBrainHealth < 300 and StoryEvent.E4_1 not in self.story_events:
+                        self.story_events.append(StoryEvent.E4_1)
+                        self.sound_manager.play_event_sound(4, 1)
+                        self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
+                    elif self.current_map.currentBrainHealth < 100 and StoryEvent.E4_2 not in self.story_events:
+                        self.story_events.append(StoryEvent.E4_2)
+                        self.sound_manager.play_event_sound(4, 2)
+                        self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
 
         try:
-            if self.increment_score == 1 and self.imagination_score == 10:
-                self.sound_manager.play_event_sound(1, 1)
-                self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
-            elif self.increment_score == 1 and self.imagination_score == 20:
-                self.sound_manager.play_event_sound(1, 2)
-                self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
             self.sound_manager.on_update(delta_time)
             self.protagonist.visible = self.sound_manager.is_sound_playing()
 
