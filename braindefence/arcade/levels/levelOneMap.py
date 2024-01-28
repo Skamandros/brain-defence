@@ -16,11 +16,12 @@ class LevelOneMap(BaseMap):
     def spawn_minions(self, dt):
         # in the first level we spawn basic minions with very general durability and attributes
         impression = Impression(
-            RESOURCE_DIR.joinpath("impressions/impression-1.png").resolve(), 0.1
+            RESOURCE_DIR.joinpath("impressions/impression-1-scaled.png").resolve()
         )
         self.impressions.append(impression)
 
     def update(self, delta_time):
+        super().update(delta_time)
         for i, impression in enumerate(self.impressions):
             impression.update(delta_time)
             if impression.killed():

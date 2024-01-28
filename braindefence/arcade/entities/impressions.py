@@ -3,12 +3,12 @@ from braindefence.arcade.constants import World
 
 
 class Impression(Entity):
-    def __init__(self, imagefilepath, character_scaling):
+    def __init__(self, imagefilepath, character_scaling=1):
         # Setup parent class
         super().__init__(imagefilepath, character_scaling)
 
         self.health = 10
-        self.speed = 10
+        self.speed = 80
         self._targetX = World.Goal[0]
         self._targetY = World.Goal[1]
         self.center_x = World.Width * 0.15
@@ -27,3 +27,6 @@ class Impression(Entity):
         return abs(self.center_x - self._targetX) < 10 and abs(
             self.center_y - self._targetY < 10
         )
+
+    def hit_by(self, projectile):
+        pass

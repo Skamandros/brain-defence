@@ -1,3 +1,4 @@
+import logging
 from typing import Tuple
 
 import arcade
@@ -8,6 +9,8 @@ from braindefence import RESOURCE_DIR
 from braindefence.arcade.entities.towerSpot import TowerSpot
 from braindefence.arcade.entities.towerOfSimpleEmotions import TowerOfSimpleEmotions
 from braindefence.arcade.gamephase import GamePhase
+from braindefence.arcade.entities.tower import Tower
+from braindefence.arcade.entities.projectile import Projectile
 
 
 class BaseMap:
@@ -15,7 +18,6 @@ class BaseMap:
     def __init__(self, level):
         self.waypoints = None
         self.tower_positions = None
-        self.active_towers = []
         self.tile_map = None
         self.spawn_point = None
         self.destination = None
@@ -23,7 +25,6 @@ class BaseMap:
         self._timeSinceSpawn = None
         self._game_phase = None
         self._impressions_leaked = None
-        self.active_impressions = []
         self.level = level
         impressions_spawn_plan = []
         # These are 'lists' that keep track of our sprites. Each sprite should
@@ -43,6 +44,7 @@ class BaseMap:
 
         # Create the Sprite lists
         self.impressions = arcade.SpriteList()
+        self.projectiles = arcade.SpriteList()
         self.towers = arcade.SpriteList(use_spatial_hash=True)
         self.HUD_batch = arcade.SpriteList()
 
@@ -93,7 +95,7 @@ class BaseMap:
             self.waypoints = [len(self.tile_map.object_lists["WayPoints"])]
             for tileobject in self.tile_map.object_lists["WayPoints"]:
                 coords = tileobject.shape
-                #print("Waypoint:", coords[0], World.Height - coords[1])
+                # print("Waypoint:", coords[0], World.Height - coords[1])
                 self.waypoints.append([coords[0], World.Height - coords[1]])
 
         # Initialize Scene with our TileMap, this will automatically add all layers
@@ -129,12 +131,18 @@ class BaseMap:
         self._label.visible = False
 
     def render(self):
-        #self.update_enemies(1 / 60)
+        # self.update_enemies(1 / 60)
         # print(len(list(self.enemies)))
         # Draw our sprites
         # self.wall_list.draw()
         self.scene.add_sprite_list(
+            name="towers", use_spatial_hash=False, sprite_list=self.towers
+        )
+        self.scene.add_sprite_list(
             name="enemies", use_spatial_hash=False, sprite_list=self.impressions
+        )
+        self.scene.add_sprite_list(
+            name="projectiles", use_spatial_hash=False, sprite_list=self.projectiles
         )
 
         self.scene.draw()
@@ -145,8 +153,15 @@ class BaseMap:
         pass
 
     def update(self, delta_time):
-        self.render()
-        pass
+        tower: Tower
+        for tower in self.towers:
+            tower.attack(delta_time, self.impressions, self.projectiles)
+        projectile: Projectile
+        for projectile in self.projectiles:
+            projectile.on_update(delta_time)
+            if arcade.check_for_collision(projectile, projectile.targetEnemy):
+                projectile.targetEnemy.hit_by(projectile)
+                self.projectiles.remove(projectile)
 
     def check_on_click(self, x, y, button, key_modifiers):
         # check whether a tower spot is clicked
@@ -160,5 +175,4 @@ class BaseMap:
                     # test = arcade.Sprite(image_source.resolve(), 1)
                     newtower.center_x = (tower_spot.x1 + tower_spot.x2) / 2
                     newtower.center_y = (tower_spot.y1 + tower_spot.y2) / 2
-                    self.scene.add_sprite("Towers", newtower)
-                    self.active_towers.append(newtower)
+                    self.towers.append(newtower)
