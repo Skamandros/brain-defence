@@ -7,7 +7,6 @@ from braindefence.arcade.levels import BaseMap
 
 
 class LevelOneMap(BaseMap):
-
     def __init__(self):
         super().__init__(self)
         arcade.schedule(self.spawn_minions, 3)
@@ -21,6 +20,7 @@ class LevelOneMap(BaseMap):
         self.impressions.append(impression)
 
     def update(self, delta_time):
+        self._timeSinceSpawn += delta_time
         for i, impression in enumerate(self.impressions):
             impression.update(delta_time)
             if impression.killed():

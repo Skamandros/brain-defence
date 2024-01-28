@@ -5,6 +5,7 @@ from braindefence.arcade.levels import LevelOneMap
 from constants import *
 
 from braindefence import RESOURCE_DIR
+from braindefence.arcade.entities.icons import ImaginationIcon
 
 
 class BrainDefence(arcade.Window):
@@ -18,6 +19,7 @@ class BrainDefence(arcade.Window):
         self.current_map = None
         self.gui_camera = None
         self.imagination_score = 0
+        self.increment_score = 0
 
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
@@ -30,6 +32,15 @@ class BrainDefence(arcade.Window):
         # Set up the GUI Camera
         self.gui_camera = arcade.Camera(self.width, self.height)
         self.imagination_score = 0
+        imagepath = RESOURCE_DIR.joinpath("icons/icon_imagination_rot0.png")
+        self.score_icon = ImaginationIcon(
+            imagepath.resolve(),
+            0.1,
+            center_x=World.Width * 0.25,
+            center_y=World.Height * 0.9,
+            increment_score=self.increment_score,
+        )
+        self.current_map.scene.add_sprite("Imagination_score", self.score_icon)
 
     def on_draw(self):
         """Render the screen."""
@@ -42,14 +53,16 @@ class BrainDefence(arcade.Window):
         self.current_map.render()
 
         # Draw our score on the screen, scrolling it with the viewport
-        score_text = f"Score: {self.imagination_score}"
+        score_text = f"Imagination: {self.imagination_score:0.0f}"
         arcade.draw_text(
             score_text,
-            World.Width * 0.25,
+            World.Width * 0.3,
             World.Height * 0.9,
             arcade.csscolor.WHITE,
             18,
         )
+
+        self.score_icon.update()
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """Called when the user presses a mouse button."""
@@ -57,8 +70,12 @@ class BrainDefence(arcade.Window):
 
     def on_update(self, delta_time: float):
         self.current_map.update(delta_time)
-
-        self.imagination_score += delta_time
+        if (self.current_map._timeSinceSpawn % 1) < 1e-2:
+            self.increment_score = 1
+        else:
+            self.increment_score = 0
+        self.imagination_score += self.increment_score
+        self.score_icon.update()
 
 
 def main():
