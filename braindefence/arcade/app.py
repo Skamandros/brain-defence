@@ -98,6 +98,8 @@ class BrainDefence(arcade.Window):
         elif self.current_map.game_phase is GamePhase.Lost:
             pass
             # TODO: add Loser Screen
+        elif self.current_map.game_phase is GamePhase.LevelEnded:
+            pass
         else:
             self.current_map.update(delta_time)
             if (self.current_map._timeSinceSpawn % 1) < 1e-2:
