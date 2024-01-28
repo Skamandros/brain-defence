@@ -6,7 +6,7 @@ from braindefence.arcade.levels import LevelOneMap
 from constants import *
 
 from braindefence import RESOURCE_DIR
-from braindefence.arcade.entities.icons import ImaginationIcon
+from braindefence.arcade.HUD import RotatingIcon
 
 
 class BrainDefence(arcade.Window):
@@ -22,6 +22,10 @@ class BrainDefence(arcade.Window):
         self.imagination_score = 0
         self.increment_score = 0
 
+        # a UIManager to handle the UI.
+        self.manager = arcade.gui.UIManager()
+        self.manager.enable()
+
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
 
@@ -33,12 +37,13 @@ class BrainDefence(arcade.Window):
         self.gui_camera = arcade.Camera(self.width, self.height)
         self.imagination_score = 0
         imagepath = RESOURCE_DIR.joinpath("icons/icon_imagination_rot0.png")
-        self.score_icon = ImaginationIcon(
+        self.score_icon = RotatingIcon(
             imagepath.resolve(),
-            0.1,
+            scale=0.1,
             center_x=World.Width * 0.25,
             center_y=World.Height * 0.9,
-            increment_score=self.increment_score,
+            change_angle=1,
+            max_angle=30,
         )
         self.current_map.scene.add_sprite("Imagination_score", self.score_icon)
 
@@ -63,6 +68,7 @@ class BrainDefence(arcade.Window):
         )
 
         self.score_icon.update()
+        print(self.score_icon.angle, self.score_icon.change_angle)
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """Called when the user presses a mouse button."""
