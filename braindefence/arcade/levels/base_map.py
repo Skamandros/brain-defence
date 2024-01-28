@@ -1,3 +1,4 @@
+import logging
 from typing import Tuple
 
 import arcade
@@ -8,14 +9,14 @@ from braindefence import RESOURCE_DIR
 from braindefence.arcade.entities.towerSpot import TowerSpot
 from braindefence.arcade.entities.towerOfSimpleEmotions import TowerOfSimpleEmotions
 from braindefence.arcade.gamephase import GamePhase
+from braindefence.arcade.entities.tower import Tower
+from braindefence.arcade.entities.projectile import Projectile
 
 
 class BaseMap:
-
     def __init__(self, level):
         self.waypoints = None
         self.tower_positions = None
-        self.active_towers = []
         self.tile_map = None
         self.spawn_point = None
         self.destination = None
@@ -23,7 +24,6 @@ class BaseMap:
         self._timeSinceSpawn = None
         self._game_phase = None
         self._impressions_leaked = None
-        self.active_impressions = []
         self.level = level
         impressions_spawn_plan = []
         # These are 'lists' that keep track of our sprites. Each sprite should
@@ -43,27 +43,9 @@ class BaseMap:
 
         # Create the Sprite lists
         self.impressions = arcade.SpriteList()
+        self.projectiles = arcade.SpriteList()
         self.towers = arcade.SpriteList(use_spatial_hash=True)
         self.HUD_batch = arcade.SpriteList()
-
-        # initial map rendering
-        self.render_map()
-
-    def enemy_leaked(self):
-        self._impressions_leaked += 1
-        if self._impressions_leaked > 5:
-            self._game_phase = GamePhase.Lost
-            self._label.text = "Defeat!"
-            self._label.visible = True
-
-    def evaluate_win_condition(self):
-        self._brain_status += 1
-        if self._brain_status > 20:
-            self._game_phase = GamePhase.Won
-            self._label.text = "Victory!"
-            self._label.visible = True
-
-    def render_map(self):
 
         # Name of map file to load
         map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
@@ -80,38 +62,68 @@ class BaseMap:
         # Read in the tiled map
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
 
+        # extract start and end point
+        if self.spawn_point is None:
+            # print(self.tile_map.object_lists["Map"])
+            coords = self.tile_map.object_lists["Map"][0]
+            self.spawn_point = [
+                (coords.shape[0][0] + coords.shape[1][0]) / 2,
+                (World.Height + coords.shape[0][1] + World.Height + coords.shape[1][1])
+                / 2,
+            ]
+            print(self.spawn_point)
+
+        if self.destination is None:
+            # print(self.tile_map.object_lists["Map"])
+            coords = self.tile_map.object_lists["Map"][1]
+            self.destination = [
+                (coords.shape[0][0] + coords.shape[1][0]) / 2,
+                (World.Height + coords.shape[0][1] + World.Height + coords.shape[1][1])
+                / 2,
+            ]
+            print(self.destination)
+
         # extract tower positions
         if self.tower_positions is None:
             self.tower_positions = []
             for tileobject in self.tile_map.object_lists["TowerSpots"]:
                 coords = tileobject.shape
-                x1, x2, y1, y2 = coords[0][0], coords[1][0], World.Height + coords[0][1], World.Height + coords[2][1]
+                x1, x2, y1, y2 = (
+                    coords[0][0],
+                    coords[1][0],
+                    World.Height + coords[0][1],
+                    World.Height + coords[2][1],
+                )
                 self.tower_positions.append(TowerSpot(x1, y1, x2, y2))
 
         # extract waypoints
         if self.waypoints is None:
-            self.waypoints = [len(self.tile_map.object_lists["WayPoints"])]
+            self.waypoints = []
             for tileobject in self.tile_map.object_lists["WayPoints"]:
                 coords = tileobject.shape
-                #print("Waypoint:", coords[0], World.Height - coords[1])
-                self.waypoints.append([coords[0], World.Height - coords[1]])
+                print("Waypoint:", coords[0], coords[1])
+                self.waypoints.append([coords[0], coords[1]])
 
         # Initialize Scene with our TileMap, this will automatically add all layers
         # from the map as SpriteLists in the scene in the proper order.
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
         # Set up the spawn, specifically placing it at these coordinates.
-        image_source = RESOURCE_DIR.joinpath("buildings").joinpath("startpoint-eye.png").resolve()
+        image_source = (
+            RESOURCE_DIR.joinpath("buildings").joinpath("startpoint-eye.png").resolve()
+        )
         self.spawn = arcade.Sprite(image_source.resolve(), 1)
-        self.spawn.center_x = World.Width * 0.1
-        self.spawn.center_y = World.Height * 0.1
+        self.spawn.center_x = self.spawn_point[0]
+        self.spawn.center_y = self.spawn_point[1]
         self.scene.add_sprite("Spawn", self.spawn)
 
         # Set up the spawn, specifically placing it at these coordinates.
-        image_source = RESOURCE_DIR.joinpath("buildings").joinpath("endpoint-brain.png").resolve()
+        image_source = (
+            RESOURCE_DIR.joinpath("buildings").joinpath("endpoint-brain.png").resolve()
+        )
         self.brain = arcade.Sprite(image_source.resolve(), 1)
-        self.brain.center_x = World.Width * 0.9
-        self.brain.center_y = World.Height * 0.9
+        self.brain.center_x = self.destination[0]
+        self.brain.center_y = self.destination[1]
         self.scene.add_sprite("Brain", self.brain)
 
         self._impressions_leaked = 0
@@ -129,15 +141,15 @@ class BaseMap:
         self._label.visible = False
 
     def render(self):
-        #self.update_enemies(1 / 60)
+        # self.update_enemies(1 / 60)
         # print(len(list(self.enemies)))
         # Draw our sprites
         # self.wall_list.draw()
-        self.scene.add_sprite_list(
-            name="enemies", use_spatial_hash=False, sprite_list=self.impressions
-        )
-
         self.scene.draw()
+        self.towers.draw()
+        self.impressions.draw()
+        self.projectiles.draw()
+
         if self._label.visible:
             self._label.draw()
 
@@ -145,20 +157,27 @@ class BaseMap:
         pass
 
     def update(self, delta_time):
-        self.render()
-        pass
+        tower: Tower
+        for tower in self.towers:
+            tower.attack(delta_time, self.impressions, self.projectiles)
+        projectile: Projectile
+        for projectile in self.projectiles:
+            projectile.on_update(delta_time)
+            if arcade.check_for_collision(projectile, projectile.targetEnemy):
+                projectile.targetEnemy.hit_by(projectile)
+                self.projectiles.remove(projectile)
 
     def check_on_click(self, x, y, button, key_modifiers):
         # check whether a tower spot is clicked
         if self.tower_positions is not None:
             for _, tower_spot in enumerate(self.tower_positions):
                 if not tower_spot.is_used and tower_spot.is_point_in_spot(x, y):
-                    print("HERE")
                     tower_spot.is_used = True
-                    newtower = TowerOfSimpleEmotions(tower_spot.x1, tower_spot.y1, tower_spot.x2, tower_spot.y2)
+                    newtower = TowerOfSimpleEmotions(
+                        tower_spot.x1, tower_spot.y1, tower_spot.x2, tower_spot.y2
+                    )
                     # image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
                     # test = arcade.Sprite(image_source.resolve(), 1)
                     newtower.center_x = (tower_spot.x1 + tower_spot.x2) / 2
                     newtower.center_y = (tower_spot.y1 + tower_spot.y2) / 2
-                    self.scene.add_sprite("Towers", newtower)
-                    self.active_towers.append(newtower)
+                    self.towers.append(newtower)

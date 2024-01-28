@@ -1,9 +1,10 @@
+import logging
+
 from gamephase import GamePhase
 
 __all__ = ["levels", "entities", "GamePhase"]
 
 import ctypes
-import logging
 import os
 
 if os.name == "nt":

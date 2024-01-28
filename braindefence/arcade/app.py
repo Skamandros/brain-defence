@@ -7,6 +7,7 @@ from braindefence.arcade.levels import LevelOneMap
 from constants import *
 
 from braindefence import RESOURCE_DIR
+from braindefence.arcade.entities.icons import ImaginationIcon
 
 
 class BrainDefence(arcade.Window):
@@ -18,6 +19,9 @@ class BrainDefence(arcade.Window):
         # Call the parent class and set up the window
         super().__init__(World.Width, World.Height, "BrainDefence")
         self.current_map = None
+        self.gui_camera = None
+        self.imagination_score = 0
+        self.increment_score = 0
         self.bg_music = []
         self.bg_music_playing = 0
         self.track_from = None
@@ -30,8 +34,19 @@ class BrainDefence(arcade.Window):
         # hard coded for map 1 starter
         # TODO: replace with menu and scene handling
         self.current_map = LevelOneMap()
-        self.current_map.render_map()
 
+        # Set up the GUI Camera
+        self.gui_camera = arcade.Camera(self.width, self.height)
+        self.imagination_score = 0
+        imagepath = RESOURCE_DIR.joinpath("icons/icon_imagination_rot0.png")
+        self.score_icon = ImaginationIcon(
+            imagepath.resolve(),
+            0.1,
+            center_x=World.Width * 0.25,
+            center_y=World.Height * 0.9,
+            increment_score=self.increment_score,
+        )
+        self.current_map.scene.add_sprite("Imagination_score", self.score_icon)
         # Set up the protagonist
         image_source = RESOURCE_DIR.joinpath("images/protagonist_nobg.png").resolve()
         protagonist = arcade.Sprite(image_source.resolve(), .4)
@@ -66,54 +81,46 @@ class BrainDefence(arcade.Window):
         self.fade_progress = 0
         logging.info("Fade from {} to {}".format(self.track_from, self.track_to))
 
-    def on_update(self, delta_time: float):
-        self.update_enemies(delta_time)
-        if self.fade_progress < 1:
-            self.fade_progress += delta_time / 3
-            self.bg_music[self.track_from].volume = 1 - self.fade_progress
-            self.bg_music[self.track_to].volume = self.fade_progress
-            logging.info("Fade progress {}".format(self.fade_progress))
-
     def on_draw(self):
         """Render the screen."""
 
         # Clear the screen to the background color
         self.clear()
+
+        # Activate the GUI camera before drawing GUI elements
+        self.gui_camera.use()
         self.current_map.render()
+
+        # Draw our score on the screen, scrolling it with the viewport
+        score_text = f"Imagination: {self.imagination_score:0.0f}"
+        arcade.draw_text(
+            score_text,
+            World.Width * 0.3,
+            World.Height * 0.9,
+            arcade.csscolor.WHITE,
+            18,
+        )
+
+        self.score_icon.update()
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """Called when the user presses a mouse button."""
         self.current_map.check_on_click(x, y, button, key_modifiers)
-        # object_list = self.current_map.tile_map.object_lists
-        # # for strange reasons, the y coordinate of the tile corners are negative
-        # # currenty key just for testing  == Level1Map
-        # print(x, y)
-        #
-        # for tileobject in object_list["TowerSpots"]:
-        #     coords = tileobject.shape
-        #     x1, x2, y1, y2 = coords[0][0], coords[1][0], coords[0][1], coords[2][1]
-        #     y1 = World.Height + y1
-        #     y2 = World.Height + y2
-        #     print(x1, x2, y1, y2)
-        #     print(coords)
-        #     # don't ask why coordinates are switched, I don't know
-        #     in_coords = (x > x1) and (x < x2) and (y > y2) and (y < y1)
-        #     if in_coords:
-        #         print("HERE")
-        #         image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
-        #         test = arcade.Sprite(image_source.resolve(), 1)
-        #         test.center_x = (x1 + x2) / 2
-        #         test.center_y = (y1 + y2) / 2
-        #         self.current_map.scene.add_sprite("test", test)
-
-        # print(object_list)
-        # mats = arcade.get_sprites_at_point((x, y), sprite_lists)
 
     def on_update(self, delta_time: float):
         self.current_map.update(delta_time)
+        if (self.current_map._timeSinceSpawn % 1) < 1e-2:
+            self.increment_score = 1
+        else:
+            self.increment_score = 0
+        self.imagination_score += self.increment_score
+        self.score_icon.update()
 
-    def on_update(self, delta_time: float):
-        self.current_map.update(delta_time)
+        if self.fade_progress < 1:
+            self.fade_progress += delta_time / 3
+            self.bg_music[self.track_from].volume = 1 - self.fade_progress
+            self.bg_music[self.track_to].volume = self.fade_progress
+            logging.info("Fade progress {}".format(self.fade_progress))
 
 
 def main():
