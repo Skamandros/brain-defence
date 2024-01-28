@@ -24,6 +24,7 @@ class SoundManager:
         self.fade_progress = 1
 
         track1 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_1-01.wav"), True)
+        logging.info("file: {}, info: {}".format(track1.file_name, track1.source.audio_format))
         self.bg_music.append(arcade.play_sound(track1, looping=True, volume=1))
         track2 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_2-01.wav"), True)
         self.bg_music.append(arcade.play_sound(track2, looping=True, volume=0))
@@ -39,7 +40,7 @@ class SoundManager:
             else:
                 track.volume = 0
 
-        intro_variants = [1, 3, 2, 2]
+        intro_variants = [1, 4, 2, 2]
         self.intros = []
         for level, variants_in_level in enumerate(intro_variants):
             intro_music = []
@@ -61,7 +62,12 @@ class SoundManager:
                     True))
             self.events.append(events)
 
+        self.epilogs = []
+        for i in range(0, 4):
+            self.epilogs.append(arcade.load_sound(RESOURCE_DIR.joinpath("sound/Epilog{0:02d}.mp3".format(i + 1))))
+
         self.current_sound = None
+        logging.info(self.intros[0][0].source.audio_format)
 
     def is_sound_playing(self):
         return self.current_sound is not None and self.current_sound.playing
@@ -78,6 +84,9 @@ class SoundManager:
 
     def play_event_sound(self, level: int, event_number: int):
         self.current_sound = arcade.play_sound(self.events[level - 1][event_number - 1])
+
+    def play_epilog(self, epilog_number: int):
+        self.current_sound = arcade.play_sound(self.epilogs[epilog_number - 1])
 
     def switch_bg_music(self, switch_to: BackgroundMusic):
         self.switch_from = self.bg_music_playing
