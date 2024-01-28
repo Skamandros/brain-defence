@@ -77,7 +77,7 @@ class BrainDefence(arcade.Window):
         )
 
         self.score_icon.update()
-        print(self.score_icon.angle, self.score_icon.change_angle)
+        # print(self.score_icon.angle, self.score_icon.change_angle)
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """Called when the user presses a mouse button."""

@@ -1,3 +1,7 @@
+import arcade
+from arcade import Texture
+
+from braindefence import RESOURCE_DIR
 from braindefence.arcade.entities import Entity
 from braindefence.arcade.constants import World
 
@@ -8,7 +12,11 @@ class Impression(Entity):
     ):
         # Setup parent class
         super().__init__(imagefilepath, character_scaling)
-
+        self.textures = [
+            arcade.load_texture(RESOURCE_DIR.joinpath("impressions/impression-1.png").resolve()),
+            arcade.load_texture(RESOURCE_DIR.joinpath("impressions/impression-1-good.png").resolve()),
+            arcade.load_texture(RESOURCE_DIR.joinpath("impressions/impression-1-bad.png").resolve())
+            ]
         self._atDestination = False
         self.impressionWaypoints = impressionWaypoints
         self.maxPositiveHealth = 50
@@ -44,3 +52,10 @@ class Impression(Entity):
 
     def hit_by(self, projectile):
         self.currentHealth = min(self.maxPositiveHealth, self.currentHealth + projectile.damage)
+        if self.currentHealth > self.maxPositiveHealth * 0.4:
+            self.set_texture(1)
+        elif self.currentHealth < self.maxNegativeHealth * 0.4:
+            self.set_texture(2)
+        else:
+            self.set_texture(0)
+
