@@ -4,11 +4,15 @@ from braindefence import RESOURCE_DIR
 from braindefence.arcade import GamePhase
 from braindefence.arcade.entities import Impression
 from braindefence.arcade.levels import BaseMap
+from braindefence.arcade.HUD.hud import IndicatorBar
+from braindefence.arcade.constants import *
 
 
 class LevelOneMap(BaseMap):
     def __init__(self):
-        super().__init__(RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve(), maxBrainHealth=200)
+        super().__init__(
+            RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve(), maxBrainHealth=200
+        )
         arcade.schedule(self.spawn_minions, 2)
         arcade.schedule(self.spawn_minions, 3.1)
 
@@ -20,6 +24,13 @@ class LevelOneMap(BaseMap):
             RESOURCE_DIR.joinpath("impressions/impression-1.png").resolve(),
             0.75,
         )
+        impression.indicator_bar: IndicatorBar = IndicatorBar(
+            impression,
+            self.bar_list,
+            (self.brain.center_x, self.brain.center_y + World.Height * 0.1),
+            full_color=arcade.color.RED,
+            background_color=arcade.color.WHITE,
+        )
         self.impressions.append(impression)
 
     def update(self, delta_time):
@@ -27,9 +38,24 @@ class LevelOneMap(BaseMap):
         self._timeSinceSpawn += delta_time
         for i, impression in enumerate(self.impressions):
             impression.update(delta_time)
+            impression.indicator_bar.fullness = min(
+                1,
+                (impression.currentHealth - impression.maxNegativeHealth)
+                / (
+                    abs(impression.maxNegativeHealth)
+                    + abs(impression.maxPositiveHealth)
+                ),
+            )
+            # Update the player's indicator bar position
+            impression.indicator_bar.position = (
+                impression.center_x,
+                impression.center_y + World.Height * 0.1,
+            )
             if impression.passed():
                 self.currentBrainHealth += impression.currentHealth
                 self.impressions.remove(impression)
+                self.bar_list.remove(impression.indicator_bar._background_box)
+                self.bar_list.remove(impression.indicator_bar._full_box)
 
     def check_on_click(self, x, y, button, key_modifiers):
         super().check_on_click(x, y, button, key_modifiers)
