@@ -41,6 +41,7 @@ class BrainDefence(arcade.View):
         self.increment_score = 0
         self.sound_manager = None
         self.story_events = []
+        self.overall_brain_remaining = 0
         self.level = 0
 
         # Set up the protagonist
@@ -109,6 +110,7 @@ class BrainDefence(arcade.View):
 
     def on_update(self, delta_time: float):
         if (self.current_map.game_phase is GamePhase.LevelEnded) or (self.current_map.game_phase is GamePhase.Lost):
+            self._update_score_and_play_intro()
             game_over_view = GameOverView()
             self.window.show_view(game_over_view)
             self.level += 1
@@ -172,6 +174,40 @@ class BrainDefence(arcade.View):
         except:
             pass
 
+    def _update_score_and_play_intro(self):
+        logging.info("Remaining brain health: {}".format(self.current_map.currentBrainHealth))
+        self.overall_brain_remaining += self.current_map.currentBrainHealth
+        match self.current_map.level:
+            case 1:  # level 2 intro
+                if self.current_map.currentBrainHealth <= 0:
+                    self.sound_manager.play_intro_sound(2, 1)
+                elif StoryEvent.E1_2 in self.story_events:
+                    self.sound_manager.play_intro_sound(2, 2)
+                elif StoryEvent.E1_1 in self.story_events:
+                    self.sound_manager.play_intro_sound(2, 3)
+                else:
+                    self.sound_manager.play_intro_sound(2, 4)
+            case 2:  # level 3 intro
+                if StoryEvent.E2_1 in self.story_events:
+                    self.sound_manager.play_intro_sound(3, 1)
+                else:
+                    self.sound_manager.play_intro_sound(3, 2)
+            case 3:  # level 4 intro
+                if StoryEvent.E3_1 in self.story_events:
+                    self.sound_manager.play_intro_sound(4, 1)
+                else:
+                    self.sound_manager.play_intro_sound(4, 2)
+            case 4:  # epilog
+                pass
+                if self.overall_brain_remaining < 500:
+                    self.sound_manager.play_epilog(1)
+                elif self.overall_brain_remaining < 1000:
+                    self.sound_manager.play_epilog(2)
+                elif self.overall_brain_remaining < 1500:
+                    self.sound_manager.play_epilog(3)
+                else:
+                    self.sound_manager.play_epilog(4)
+
 
 class MainMenu(arcade.View):
     """Class that manages the 'menu' view."""
@@ -202,6 +238,10 @@ class MainMenu(arcade.View):
 class GameOverView(arcade.View):
     """Class to manage the game overview"""
 
+    def __init__(self, sound_manager):
+        super().__init__()
+        self.sound_manager = sound_manager
+
     def on_show_view(self):
         """Called when switching to this view"""
         arcade.set_background_color(arcade.color.BLACK)
@@ -223,6 +263,9 @@ class GameOverView(arcade.View):
         game_view = BrainDefence()
         game_view.setup()
         self.window.show_view(game_view)
+
+    def on_update(self, delta_time: float):
+        self.sound_manager.on_update(delta_time)
 
 
 def main():

@@ -22,6 +22,7 @@ class SoundManager:
         self.switch_from = None
         self.switch_to = None
         self.fade_progress = 1
+        self.sound_queue = []
 
         track1 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_1-01.wav"), True)
         logging.info("file: {}, info: {}".format(track1.file_name, track1.source.audio_format))
@@ -77,16 +78,22 @@ class SoundManager:
             self.fade_progress += delta_time / 3
             self.bg_music[self.switch_from].volume = MUSIC_VOLUME - self.fade_progress * MUSIC_VOLUME
             self.bg_music[self.switch_to].volume = self.fade_progress * MUSIC_VOLUME
-            # logging.info("Fade progress {}".format(self.fade_progress))
+            logging.debug("Fade progress {}".format(self.fade_progress))
+        if (self.current_sound is None or not self.current_sound.playing) and self.sound_queue:
+            self.current_sound = arcade.play_sound(self.sound_queue.pop(0))
+            logging.info("Popped sound from queue")
 
     def play_intro_sound(self, level: int, variant: int = 1):
-        self.current_sound = arcade.play_sound(self.intros[level - 1][variant - 1])
+        self.sound_queue.append(self.intros[level - 1][variant - 1])
+        logging.info("Queued intro sound for level {}, variant {}".format(level, variant))
 
     def play_event_sound(self, level: int, event_number: int):
-        self.current_sound = arcade.play_sound(self.events[level - 1][event_number - 1])
+        self.sound_queue.append(self.events[level - 1][event_number - 1])
+        logging.info("Queued event sound for level {}, event {}".format(level, event_number))
 
     def play_epilog(self, epilog_number: int):
-        self.current_sound = arcade.play_sound(self.epilogs[epilog_number - 1])
+        self.sound_queue.append(self.epilogs[epilog_number - 1])
+        logging.info("Queued epilog sound {}".format(epilog_number))
 
     def switch_bg_music(self, switch_to: BackgroundMusic):
         self.switch_from = self.bg_music_playing
