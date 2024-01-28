@@ -134,7 +134,9 @@ class BaseMap:
         self.brain.center_y = self.destination[1]
         self.scene.add_sprite("Brain", self.brain)
         self.brain.indicator_bar: IndicatorBar = IndicatorBar(
-            self.brain, self.bar_list, (self.brain.center_x, self.brain.center_y)
+            self.brain,
+            self.bar_list,
+            (self.brain.center_x, self.brain.center_y - World.Height * 0.15),
         )
 
         self._impressions_leaked = 0
@@ -178,9 +180,11 @@ class BaseMap:
             if arcade.check_for_collision(projectile, projectile.targetEnemy):
                 projectile.targetEnemy.hit_by(projectile)
                 self.projectiles.remove(projectile)
-        self.brain.indicator_bar.fullness = min(1, (
-            self.currentBrainHealth - self.minBrainHealth
-        ) / (abs(self.minBrainHealth) + abs(self.maxBrainHealth)))
+        self.brain.indicator_bar.fullness = min(
+            1,
+            (self.currentBrainHealth - self.minBrainHealth)
+            / (abs(self.minBrainHealth) + abs(self.maxBrainHealth)),
+        )
 
         self.evaluate_win_condition()
 

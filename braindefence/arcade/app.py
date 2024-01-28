@@ -11,6 +11,8 @@ from constants import *
 from braindefence import RESOURCE_DIR
 from braindefence.arcade.HUD import RotatingIcon
 
+import pyglet
+
 
 class BrainDefence(arcade.Window):
     """
@@ -24,6 +26,7 @@ class BrainDefence(arcade.Window):
         self.gui_camera = None
         self.imagination_score = 0
         self.increment_score = 0
+        self.sound_manager = None
 
         # Set up the protagonist
         image_source = RESOURCE_DIR.joinpath("images/protagonist_nobg.png").resolve()
@@ -31,7 +34,10 @@ class BrainDefence(arcade.Window):
         self.protagonist.center_x = World.Width * 0.9
         self.protagonist.center_y = self.protagonist.height / 2
         self.protagonist.visible = False
-        self.sound_manager = SoundManager()
+        try:
+            self.sound_manager = SoundManager()
+        except:
+            pass
 
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
@@ -54,7 +60,8 @@ class BrainDefence(arcade.Window):
         )
         self.current_map.scene.add_sprite("Imagination_score", self.score_icon)
         self.current_map.scene.add_sprite("Protagonist", self.protagonist)
-        self.sound_manager.play_intro_sound(1)
+        if self.sound_manager is not None:
+            self.sound_manager.play_intro_sound(1)
 
     def on_draw(self):
         """Render the screen."""
@@ -100,15 +107,18 @@ class BrainDefence(arcade.Window):
             self.imagination_score += self.increment_score
             self.score_icon.update()
 
-        if self.increment_score == 1 and self.imagination_score == 10:
-            self.sound_manager.play_event_sound(1, 1)
-            self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
-        elif self.increment_score == 1 and self.imagination_score == 20:
-            self.sound_manager.play_event_sound(1, 2)
-            self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
+        try:
+            if self.increment_score == 1 and self.imagination_score == 10:
+                self.sound_manager.play_event_sound(1, 1)
+                self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
+            elif self.increment_score == 1 and self.imagination_score == 20:
+                self.sound_manager.play_event_sound(1, 2)
+                self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
+            self.sound_manager.on_update(delta_time)
+            self.protagonist.visible = self.sound_manager.is_sound_playing()
 
-        self.sound_manager.on_update(delta_time)
-        self.protagonist.visible = self.sound_manager.is_sound_playing()
+        except:
+            pass
 
 
 def main():
