@@ -62,6 +62,9 @@ class BrainDefence(arcade.View):
         # TODO: replace with menu and scene handling
         self.current_map = self.levels[level]
         self.current_map.start_level()
+        self.sound_manager.switch_bg_music(BackgroundMusic.Default)
+        if self.current_map.level == 1:
+            self.sound_manager.play_intro_sound(1)
 
         # Set up the GUI Camera
         self.camera = arcade.Camera(self.window.width, self.window.height)
@@ -78,8 +81,6 @@ class BrainDefence(arcade.View):
         )
         self.current_map.scene.add_sprite("Imagination_score", self.score_icon)
         self.current_map.scene.add_sprite("Protagonist", self.protagonist)
-        if self.sound_manager is not None:
-            self.sound_manager.play_intro_sound(1)
 
     def on_draw(self):
         """Render the screen."""
@@ -111,14 +112,11 @@ class BrainDefence(arcade.View):
     def on_update(self, delta_time: float):
         if (self.current_map.game_phase is GamePhase.LevelEnded) or (self.current_map.game_phase is GamePhase.Lost):
             self._update_score_and_play_intro()
-            game_over_view = GameOverView()
-            self.window.show_view(game_over_view)
             self.level += 1
-            if len(self.levels) -1 == self.level:
-                game_over_view = GameOverView()
+            if len(self.levels) == self.level:
+                game_over_view = GameOverView(self.sound_manager)
                 self.window.show_view(game_over_view)
             else:
-                self.window.show_view(game_over_view)
                 self.window.show_view(self)
                 self.setup(self.level)
         else:
@@ -194,9 +192,9 @@ class BrainDefence(arcade.View):
                     self.sound_manager.play_intro_sound(3, 2)
             case 3:  # level 4 intro
                 if StoryEvent.E3_1 in self.story_events:
-                    self.sound_manager.play_intro_sound(4, 1)
-                else:
                     self.sound_manager.play_intro_sound(4, 2)
+                else:
+                    self.sound_manager.play_intro_sound(4, 1)
             case 4:  # epilog
                 pass
                 if self.overall_brain_remaining < 500:
