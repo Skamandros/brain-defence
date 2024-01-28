@@ -11,19 +11,23 @@ from constants import *
 from braindefence import RESOURCE_DIR
 from braindefence.arcade.HUD import RotatingIcon
 
+import pyglet
 
-class BrainDefence(arcade.Window):
+
+class BrainDefence(arcade.View):
     """
     Main application class.
     """
 
     def __init__(self):
         # Call the parent class and set up the window
-        super().__init__(World.Width, World.Height, "BrainDefence")
+        super().__init__()
+
         self.current_map = None
         self.gui_camera = None
         self.imagination_score = 0
         self.increment_score = 0
+        self.sound_manager = None
 
         # Set up the protagonist
         image_source = RESOURCE_DIR.joinpath("images/protagonist_nobg.png").resolve()
@@ -31,7 +35,10 @@ class BrainDefence(arcade.Window):
         self.protagonist.center_x = World.Width * 0.9
         self.protagonist.center_y = self.protagonist.height / 2
         self.protagonist.visible = False
-        self.sound_manager = SoundManager()
+        try:
+            self.sound_manager = SoundManager()
+        except:
+            pass
 
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
@@ -41,7 +48,8 @@ class BrainDefence(arcade.Window):
         self.current_map = LevelOneMap()
 
         # Set up the GUI Camera
-        self.gui_camera = arcade.Camera(self.width, self.height)
+        self.camera = arcade.Camera(self.window.width, self.window.height)
+        self.gui_camera = arcade.Camera(self.window.width, self.window.height)
         self.imagination_score = 0
         imagepath = RESOURCE_DIR.joinpath("icons/icon_imagination_rot0.png")
         self.score_icon = RotatingIcon(
@@ -54,7 +62,8 @@ class BrainDefence(arcade.Window):
         )
         self.current_map.scene.add_sprite("Imagination_score", self.score_icon)
         self.current_map.scene.add_sprite("Protagonist", self.protagonist)
-        self.sound_manager.play_intro_sound(1)
+        if self.sound_manager is not None:
+            self.sound_manager.play_intro_sound(1)
 
     def on_draw(self):
         """Render the screen."""
@@ -77,20 +86,19 @@ class BrainDefence(arcade.Window):
         )
 
         self.score_icon.update()
-        print(self.score_icon.angle, self.score_icon.change_angle)
+        # print(self.score_icon.angle, self.score_icon.change_angle)
 
     def on_mouse_press(self, x, y, button, key_modifiers):
         """Called when the user presses a mouse button."""
         self.current_map.check_on_click(x, y, button, key_modifiers)
 
     def on_update(self, delta_time: float):
-        if self.current_map.game_phase is GamePhase.Won:
-            pass
-            # print("Winner!")
-            # TODO: add Winner Screen
+        if self.current_map.game_phase is GamePhase.LevelEnded:
+            game_over_view = GameOverView()
+            self.window.show_view(game_over_view)
         elif self.current_map.game_phase is GamePhase.Lost:
-            pass
-            # TODO: add Loser Screen
+            game_over_view = GameOverView()
+            self.window.show_view(game_over_view)
         else:
             self.current_map.update(delta_time)
             if (self.current_map._timeSinceSpawn % 1) < 1e-2:
@@ -100,21 +108,77 @@ class BrainDefence(arcade.Window):
             self.imagination_score += self.increment_score
             self.score_icon.update()
 
-        if self.increment_score == 1 and self.imagination_score == 10:
-            self.sound_manager.play_event_sound(1, 1)
-            self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
-        elif self.increment_score == 1 and self.imagination_score == 20:
-            self.sound_manager.play_event_sound(1, 2)
-            self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
+        try:
+            if self.increment_score == 1 and self.imagination_score == 10:
+                self.sound_manager.play_event_sound(1, 1)
+                self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
+            elif self.increment_score == 1 and self.imagination_score == 20:
+                self.sound_manager.play_event_sound(1, 2)
+                self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
+            self.sound_manager.on_update(delta_time)
+            self.protagonist.visible = self.sound_manager.is_sound_playing()
 
-        self.sound_manager.on_update(delta_time)
-        self.protagonist.visible = self.sound_manager.is_sound_playing()
+        except:
+            pass
+
+
+class MainMenu(arcade.View):
+    """Class that manages the 'menu' view."""
+
+    def on_show_view(self):
+        """Called when switching to this view."""
+        arcade.set_background_color(arcade.color.WHITE)
+
+    def on_draw(self):
+        """Draw the menu"""
+        self.clear()
+        arcade.draw_text(
+            "Main Menu - Click to play",
+            World.Width // 2,
+            World.Height // 2,
+            arcade.color.BLACK,
+            font_size=30,
+            anchor_x="center",
+        )
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """Use a mouse press to advance to the 'game' view."""
+        game_view = BrainDefence()
+        game_view.setup()
+        self.window.show_view(game_view)
+
+
+class GameOverView(arcade.View):
+    """Class to manage the game overview"""
+
+    def on_show_view(self):
+        """Called when switching to this view"""
+        arcade.set_background_color(arcade.color.BLACK)
+
+    def on_draw(self):
+        """Draw the game overview"""
+        self.clear()
+        arcade.draw_text(
+            "Game Over - Click to restart",
+            World.Width / 2,
+            World.Height / 2,
+            arcade.color.WHITE,
+            30,
+            anchor_x="center",
+        )
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """Use a mouse press to advance to the 'game' view."""
+        game_view = BrainDefence()
+        game_view.setup()
+        self.window.show_view(game_view)
 
 
 def main():
     """Main function"""
-    window = BrainDefence()
-    window.setup()
+    window = arcade.Window(World.Width, World.Height, "BrainDefence")
+    menu_view = MainMenu()
+    window.show_view(menu_view)
     arcade.run()
 
 

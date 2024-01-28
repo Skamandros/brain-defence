@@ -18,7 +18,7 @@ from braindefence.arcade.HUD.hud import IndicatorBar
 class BaseMap:
     def __init__(
         self, map_name, maxBrainHealth=500, currentBrainHealth=0, minBrainHealth=-100
-    ):
+    , level=0):
         self.waypoints = None
         self.tower_positions = None
         self.tile_map = None
@@ -27,6 +27,7 @@ class BaseMap:
         self.maxBrainHealth = maxBrainHealth
         self.minBrainHealth = minBrainHealth
         self.currentBrainHealth = currentBrainHealth
+        self.level = level
 
         self.bar_list = arcade.SpriteList()
 
@@ -109,7 +110,7 @@ class BaseMap:
             self.waypoints = []
             for tileobject in self.tile_map.object_lists["WayPoints"]:
                 coords = tileobject.shape
-                print("Waypoint:", coords[0], coords[1])
+                # print("Waypoint:", coords[0], coords[1])
                 self.waypoints.append([coords[0], coords[1]])
 
         # Initialize Scene with our TileMap, this will automatically add all layers
@@ -134,7 +135,9 @@ class BaseMap:
         self.brain.center_y = self.destination[1]
         self.scene.add_sprite("Brain", self.brain)
         self.brain.indicator_bar: IndicatorBar = IndicatorBar(
-            self.brain, self.bar_list, (self.brain.center_x, self.brain.center_y)
+            self.brain,
+            self.bar_list,
+            (self.brain.center_x, self.brain.center_y - World.Height * 0.15),
         )
 
         self._impressions_leaked = 0
@@ -178,9 +181,10 @@ class BaseMap:
             if arcade.check_for_collision(projectile, projectile.targetEnemy):
                 projectile.targetEnemy.hit_by(projectile)
                 self.projectiles.remove(projectile)
-        self.brain.indicator_bar.fullness = min(1, (
-            self.currentBrainHealth - self.minBrainHealth
-        ) / (abs(self.minBrainHealth) + abs(self.maxBrainHealth)))
+        self.brain.indicator_bar.fullness = max(0.0, min(1,
+            (self.currentBrainHealth - self.minBrainHealth)
+            / (abs(self.minBrainHealth) + abs(self.maxBrainHealth))),
+        )
 
         self.evaluate_win_condition()
 
