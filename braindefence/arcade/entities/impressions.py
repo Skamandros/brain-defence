@@ -20,9 +20,9 @@ class Impression(Entity):
         self.set_texture(2)
         self._atDestination = False
         self.impressionWaypoints = impressionWaypoints
-        self.maxPositiveHealth = 50
-        self.maxNegativeHealth = -20
-        self.currentHealth = -20
+        self.maxPositiveHealth = 0
+        self.maxNegativeHealth = -30
+        self.currentHealth = -30
         self.speed = 300
         self._targetX = impressionWaypoints[0][0]
         self._targetY = impressionWaypoints[0][1]

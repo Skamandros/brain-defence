@@ -11,10 +11,10 @@ from braindefence.arcade.constants import *
 class LevelOneMap(BaseMap):
     def __init__(self):
         super().__init__(
-            RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve(), maxBrainHealth=200
+            RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve(), maxBrainHealth=400, minBrainHealth=0, currentBrainHealth=400, level=1
         )
         self.impressions_spawned = 0
-        self._max_spawned_impressions = 35
+        self._max_spawned_impressions = 15
         arcade.schedule(self.spawn_minions, 2)
         arcade.schedule(self.spawn_minions, 3.1)
 
@@ -72,9 +72,9 @@ class LevelOneMap(BaseMap):
     def evaluate_win_condition(self):
         if self.game_phase is GamePhase.LevelEnded:
             print("Level ended with ", self.currentBrainHealth, " Brainhealth")
-        elif self.maxBrainHealth <= self.currentBrainHealth:
-            self.game_phase = GamePhase.Won
-            print("YOU WON!!!")
+        # elif self.maxBrainHealth <= self.currentBrainHealth:
+        #     self.game_phase = GamePhase.Won
+        #     print("YOU WON!!!")
         elif self.minBrainHealth >= self.currentBrainHealth:
             self.game_phase = GamePhase.Lost
             print("YOU LOSE...")

@@ -93,14 +93,12 @@ class BrainDefence(arcade.View):
         self.current_map.check_on_click(x, y, button, key_modifiers)
 
     def on_update(self, delta_time: float):
-        if self.current_map.game_phase is GamePhase.Won:
+        if self.current_map.game_phase is GamePhase.LevelEnded:
             game_over_view = GameOverView()
             self.window.show_view(game_over_view)
         elif self.current_map.game_phase is GamePhase.Lost:
             game_over_view = GameOverView()
             self.window.show_view(game_over_view)
-        elif self.current_map.game_phase is GamePhase.LevelEnded:
-            pass
         else:
             self.current_map.update(delta_time)
             if (self.current_map._timeSinceSpawn % 1) < 1e-2:
