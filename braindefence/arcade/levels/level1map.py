@@ -31,3 +31,6 @@ class Level1Map(BaseMap):
 
     def update(self, delta_time):
         super()
+
+    def check_on_click(self, x, y, button, key_modifiers):
+        super().check_on_click(x, y, button, key_modifiers)

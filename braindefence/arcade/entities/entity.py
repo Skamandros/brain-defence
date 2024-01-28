@@ -3,7 +3,7 @@ from braindefence.arcade.constants import *
 
 
 class Entity(arcade.Sprite):
-    def __init__(self, imagefilepath, CHARACTER_SCALING):
+    def __init__(self, imagefilepath):
         super().__init__(imagefilepath, CHARACTER_SCALING)
 
         # Default to facing right

@@ -1,14 +1,21 @@
+from typing import Tuple
+
 import arcade
 
 from braindefence.arcade.constants import World, TILE_SCALING
 
 from braindefence import RESOURCE_DIR
+from braindefence.arcade.entities.towerSpot import TowerSpot
+from braindefence.arcade.entities.towerOfSimpleEmotions import TowerOfSimpleEmotions
 from braindefence.arcade.gamephase import GamePhase
 
 
 class BaseMap:
 
     def __init__(self, level):
+        self.waypoints = None
+        self.tower_positions = None
+        self.active_towers = []
         self.tile_map = None
         self.spawn_point = None
         self.destination = None
@@ -17,7 +24,6 @@ class BaseMap:
         self._game_phase = None
         self._impressions_leaked = None
         self.active_impressions = []
-        self.tower_spots = []
         self.level = level
         impressions_spawn_plan = []
         # These are 'lists' that keep track of our sprites. Each sprite should
@@ -74,6 +80,22 @@ class BaseMap:
         # Read in the tiled map
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
 
+        # extract tower positions
+        if self.tower_positions is None:
+            self.tower_positions = []
+            for tileobject in self.tile_map.object_lists["TowerSpots"]:
+                coords = tileobject.shape
+                x1, x2, y1, y2 = coords[0][0], coords[1][0], World.Height + coords[0][1], World.Height + coords[2][1]
+                self.tower_positions.append(TowerSpot(x1, y1, x2, y2))
+
+        # extract waypoints
+        if self.waypoints is None:
+            self.waypoints = [len(self.tile_map.object_lists["WayPoints"])]
+            for tileobject in self.tile_map.object_lists["WayPoints"]:
+                coords = tileobject.shape
+                #print("Waypoint:", coords[0], World.Height - coords[1])
+                self.waypoints.append([coords[0], World.Height - coords[1]])
+
         # Initialize Scene with our TileMap, this will automatically add all layers
         # from the map as SpriteLists in the scene in the proper order.
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
@@ -125,3 +147,18 @@ class BaseMap:
     def update(self, delta_time):
         self.render()
         pass
+
+    def check_on_click(self, x, y, button, key_modifiers):
+        # check whether a tower spot is clicked
+        if self.tower_positions is not None:
+            for _, tower_spot in enumerate(self.tower_positions):
+                if not tower_spot.is_used and tower_spot.is_point_in_spot(x, y):
+                    print("HERE")
+                    tower_spot.is_used = True
+                    newtower = TowerOfSimpleEmotions(tower_spot.x1, tower_spot.y1, tower_spot.x2, tower_spot.y2)
+                    # image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
+                    # test = arcade.Sprite(image_source.resolve(), 1)
+                    newtower.center_x = (tower_spot.x1 + tower_spot.x2) / 2
+                    newtower.center_y = (tower_spot.y1 + tower_spot.y2) / 2
+                    self.scene.add_sprite("Towers", newtower)
+                    self.active_towers.append(newtower)
