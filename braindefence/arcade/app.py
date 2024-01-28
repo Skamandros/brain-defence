@@ -3,15 +3,10 @@ import logging
 import arcade
 from pathlib import Path
 
+from braindefence.arcade.levels import LevelOneMap
 from constants import *
-from braindefence.arcade.entities import Impression
+
 from braindefence import RESOURCE_DIR
-
-
-class GamePhase(Enum):
-    Running = (0,)
-    Won = (1,)
-    Lost = 2
 
 
 class BrainDefence(arcade.Window):
@@ -22,74 +17,27 @@ class BrainDefence(arcade.Window):
     def __init__(self):
         # Call the parent class and set up the window
         super().__init__(World.Width, World.Height, "BrainDefence")
-
-        # These are 'lists' that keep track of our sprites. Each sprite should
-        # go into a list.
-        self.wall_list = None
-        self.player_list = None
-
-        # Our Scene Object
-        self.scene = None
-
-        # Separate variable that holds the player sprite
-        self.spawn_sprite = None
-        self.brain_sprite = None
-        self._timeSinceSpawn = 0
+        self.current_map = None
         self.bg_music = []
         self.bg_music_playing = 0
         self.track_from = None
         self.track_to = None
         self.fade_progress = 1
 
-        arcade.set_background_color(arcade.csscolor.CORNFLOWER_BLUE)
-
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
 
-        # Create the Sprite lists
-        self.enemies = arcade.SpriteList()
-        self.towers = arcade.SpriteList(use_spatial_hash=True)
-        self.HUD_batch = arcade.SpriteList()
-
-        # Name of map file to load
-        map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
-
-        # Layer specific options are defined based on Layer names in a dictionary
-        # Doing this will make the SpriteList for the platforms layer
-        # use spatial hashing for detection.
-        layer_options = {
-            "Platforms": {
-                "use_spatial_hash": True,
-            },
-        }
-
-        # Read in the tiled map
-        self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
-
-        # Initialize Scene with our TileMap, this will automatically add all layers
-        # from the map as SpriteLists in the scene in the proper order.
-        self.scene = arcade.Scene.from_tilemap(self.tile_map)
-
-        # Set up the spawn, specifically placing it at these coordinates.
-        image_source = RESOURCE_DIR.joinpath("eye.png").resolve()
-        self.spawn = arcade.Sprite(image_source.resolve(), 1)
-        self.spawn.center_x = World.Width * 0.1
-        self.spawn.center_y = World.Height * 0.1
-        self.scene.add_sprite("Spawn", self.spawn)
-
-        # Set up the spawn, specifically placing it at these coordinates.
-        image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
-        self.brain = arcade.Sprite(image_source.resolve(), 1)
-        self.brain.center_x = World.Width * 0.9
-        self.brain.center_y = World.Height * 0.9
-        self.scene.add_sprite("Brain", self.brain)
+        # hard coded for map 1 starter
+        # TODO: replace with menu and scene handling
+        self.current_map = LevelOneMap()
+        self.current_map.render_map()
 
         # Set up the protagonist
         image_source = RESOURCE_DIR.joinpath("images/protagonist_nobg.png").resolve()
         protagonist = arcade.Sprite(image_source.resolve(), .4)
         protagonist.center_x = World.Width * 0.9
         protagonist.center_y = protagonist.height / 2
-        self.scene.add_sprite("Protagonist", protagonist)
+        self.current_map.scene.add_sprite("Protagonist", protagonist)
 
         track1 = arcade.load_sound(RESOURCE_DIR.joinpath("sound/brain_1-01.wav"), True)
         self.bg_music.append(arcade.play_sound(track1, looping=True, volume=1))
@@ -111,51 +59,7 @@ class BrainDefence(arcade.Window):
         level01intro = arcade.load_sound(RESOURCE_DIR.joinpath("sound/Level01_Intro.mp3"), True)
         arcade.play_sound(level01intro)
 
-        self._enemies_killed = 0
-        self._enemies_leaked = 0
-        self._game_phase = GamePhase.Running
 
-        self._label = arcade.Text(
-            text="",
-            start_x=World.Width // 2,
-            start_y=World.Height // 2,
-            color=arcade.color.WHITE,
-            font_size=36,
-            align="left",
-            font_name="Roboto",
-        )
-        self._label.visible = False
-
-    def enemy_killed(self):
-        self._enemies_killed += 1
-        if self._enemies_killed > 20:
-            self._game_phase = GamePhase.Won
-            self._label.text = "Victory!"
-            self._label.visible = True
-
-    def enemy_leaked(self):
-        self._enemies_leaked += 1
-        if self._enemies_leaked > 5:
-            self._game_phase = GamePhase.Lost
-            self._label.text = "Defeat!"
-            self._label.visible = True
-
-    def update_enemies(self, dt):
-        self._timeSinceSpawn += dt
-        if self._timeSinceSpawn > World.SpawnRateSeconds:
-            self._timeSinceSpawn = 0
-            enemy = Impression(
-                RESOURCE_DIR.joinpath("minion-template.png").resolve(), 0.1
-            )
-            self.enemies.append(enemy)
-        for i, enemy in enumerate(self.enemies):
-            enemy.update(dt)
-            if enemy.killed():
-                self.enemy_killed()
-                self.enemies.remove(enemy)
-            elif enemy.passed():
-                self.enemy_leaked()
-                self.enemies.remove(enemy)
 
     def _switch_music(self, delta_time: float):
         self.track_from = self.bg_music_playing
@@ -177,14 +81,41 @@ class BrainDefence(arcade.Window):
 
         # Clear the screen to the background color
         self.clear()
-        # Draw our sprites
-        # self.wall_list.draw()
-        self.scene.add_sprite_list(
-            name="enemies", use_spatial_hash=False, sprite_list=self.enemies
-        )
-        self.scene.draw()
-        if self._label.visible:
-            self._label.draw()
+        self.current_map.render()
+
+    def on_mouse_press(self, x, y, button, key_modifiers):
+        """Called when the user presses a mouse button."""
+        self.current_map.check_on_click(x, y, button, key_modifiers)
+        # object_list = self.current_map.tile_map.object_lists
+        # # for strange reasons, the y coordinate of the tile corners are negative
+        # # currenty key just for testing  == Level1Map
+        # print(x, y)
+        #
+        # for tileobject in object_list["TowerSpots"]:
+        #     coords = tileobject.shape
+        #     x1, x2, y1, y2 = coords[0][0], coords[1][0], coords[0][1], coords[2][1]
+        #     y1 = World.Height + y1
+        #     y2 = World.Height + y2
+        #     print(x1, x2, y1, y2)
+        #     print(coords)
+        #     # don't ask why coordinates are switched, I don't know
+        #     in_coords = (x > x1) and (x < x2) and (y > y2) and (y < y1)
+        #     if in_coords:
+        #         print("HERE")
+        #         image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
+        #         test = arcade.Sprite(image_source.resolve(), 1)
+        #         test.center_x = (x1 + x2) / 2
+        #         test.center_y = (y1 + y2) / 2
+        #         self.current_map.scene.add_sprite("test", test)
+
+        # print(object_list)
+        # mats = arcade.get_sprites_at_point((x, y), sprite_lists)
+
+    def on_update(self, delta_time: float):
+        self.current_map.update(delta_time)
+
+    def on_update(self, delta_time: float):
+        self.current_map.update(delta_time)
 
 
 def main():
