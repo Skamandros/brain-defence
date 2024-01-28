@@ -12,9 +12,13 @@ from braindefence.arcade.gamephase import GamePhase
 from braindefence.arcade.entities.tower import Tower
 from braindefence.arcade.entities.projectile import Projectile
 
+from braindefence.arcade.HUD.hud import IndicatorBar
+
 
 class BaseMap:
-    def __init__(self, map_name, maxBrainHealth=500, currentBrainHealth=0, minBrainHealth=-100):
+    def __init__(
+        self, map_name, maxBrainHealth=500, currentBrainHealth=0, minBrainHealth=-100
+    ):
         self.waypoints = None
         self.tower_positions = None
         self.tile_map = None
@@ -24,6 +28,7 @@ class BaseMap:
         self.minBrainHealth = minBrainHealth
         self.currentBrainHealth = currentBrainHealth
 
+        self.bar_list = arcade.SpriteList()
 
         self._timeSinceSpawn = None
         self.game_phase = None
@@ -128,6 +133,9 @@ class BaseMap:
         self.brain.center_x = self.destination[0]
         self.brain.center_y = self.destination[1]
         self.scene.add_sprite("Brain", self.brain)
+        self.brain.indicator_bar: IndicatorBar = IndicatorBar(
+            self.brain, self.bar_list, (self.brain.center_x, self.brain.center_y)
+        )
 
         self._impressions_leaked = 0
         self.game_phase = GamePhase.Running
@@ -152,6 +160,7 @@ class BaseMap:
         self.towers.draw()
         self.impressions.draw()
         self.projectiles.draw()
+        self.bar_list.draw()
 
         if self._label.visible:
             self._label.draw()
@@ -169,6 +178,9 @@ class BaseMap:
             if arcade.check_for_collision(projectile, projectile.targetEnemy):
                 projectile.targetEnemy.hit_by(projectile)
                 self.projectiles.remove(projectile)
+        self.brain.indicator_bar.fullness = (
+            self.currentBrainHealth - self.minBrainHealth
+        ) / (abs(self.minBrainHealth) + abs(self.maxBrainHealth))
 
         self.evaluate_win_condition()
 

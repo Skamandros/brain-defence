@@ -24,17 +24,14 @@ class BrainDefence(arcade.Window):
         self.gui_camera = None
         self.imagination_score = 0
         self.increment_score = 0
+
         # Set up the protagonist
         image_source = RESOURCE_DIR.joinpath("images/protagonist_nobg.png").resolve()
-        self.protagonist = arcade.Sprite(image_source.resolve(), .4)
+        self.protagonist = arcade.Sprite(image_source.resolve(), 0.4)
         self.protagonist.center_x = World.Width * 0.9
         self.protagonist.center_y = self.protagonist.height / 2
         self.protagonist.visible = False
         self.sound_manager = SoundManager()
-
-        # a UIManager to handle the UI.
-        # self.manager = arcade.gui.UIManager()
-        # self.manager.enable()
 
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
