@@ -59,8 +59,6 @@ class BrainDefence(arcade.Window):
         level01intro = arcade.load_sound(RESOURCE_DIR.joinpath("sound/Level01_Intro.mp3"), True)
         arcade.play_sound(level01intro)
 
-
-
     def _switch_music(self, delta_time: float):
         self.track_from = self.bg_music_playing
         self.bg_music_playing = (self.bg_music_playing + 1) % len(self.bg_music)
