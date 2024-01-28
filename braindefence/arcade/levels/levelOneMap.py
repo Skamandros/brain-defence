@@ -10,13 +10,17 @@ class LevelOneMap(BaseMap):
 
     def __init__(self):
         super().__init__(self)
-        arcade.schedule(self.spawn_minions, .5)
-        arcade.schedule(self.spawn_minions, 5)
+        self.render_map()
+        arcade.schedule(self.spawn_minions, 1)
+        #arcade.schedule(self.spawn_minions, 3)
 
     def spawn_minions(self, dt):
         # in the first level we spawn basic minions with very general durability and attributes
         impression = Impression(
-            RESOURCE_DIR.joinpath("impressions").joinpath("impression-1.png").resolve(), 1
+            self.waypoints,
+            self.spawn_point,
+            RESOURCE_DIR.joinpath("impressions/impression-1.png").resolve(),
+            0.3
         )
         self.impressions.append(impression)
 

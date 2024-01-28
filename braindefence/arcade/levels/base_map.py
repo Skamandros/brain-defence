@@ -80,6 +80,21 @@ class BaseMap:
         # Read in the tiled map
         self.tile_map = arcade.load_tilemap(map_name, TILE_SCALING, layer_options)
 
+        # extract start and end point
+        if self.spawn_point is None:
+            #print(self.tile_map.object_lists["Map"])
+            coords = self.tile_map.object_lists["Map"][0]
+            self.spawn_point = [(coords.shape[0][0] + coords.shape[1][0]) / 2 ,
+                                (World.Height + coords.shape[0][1] + World.Height + coords.shape[1][1])/2]
+            print(self.spawn_point)
+
+        if self.destination is None:
+            #print(self.tile_map.object_lists["Map"])
+            coords = self.tile_map.object_lists["Map"][1]
+            self.destination = [(coords.shape[0][0] + coords.shape[1][0]) / 2 ,
+                                (World.Height + coords.shape[0][1] + World.Height + coords.shape[1][1]) / 2]
+            print(self.destination)
+
         # extract tower positions
         if self.tower_positions is None:
             self.tower_positions = []
@@ -90,11 +105,11 @@ class BaseMap:
 
         # extract waypoints
         if self.waypoints is None:
-            self.waypoints = [len(self.tile_map.object_lists["WayPoints"])]
+            self.waypoints = []
             for tileobject in self.tile_map.object_lists["WayPoints"]:
                 coords = tileobject.shape
-                #print("Waypoint:", coords[0], World.Height - coords[1])
-                self.waypoints.append([coords[0], World.Height - coords[1]])
+                print("Waypoint:", coords[0], coords[1])
+                self.waypoints.append([coords[0], coords[1]])
 
         # Initialize Scene with our TileMap, this will automatically add all layers
         # from the map as SpriteLists in the scene in the proper order.
@@ -103,15 +118,15 @@ class BaseMap:
         # Set up the spawn, specifically placing it at these coordinates.
         image_source = RESOURCE_DIR.joinpath("buildings").joinpath("startpoint-eye.png").resolve()
         self.spawn = arcade.Sprite(image_source.resolve(), 1)
-        self.spawn.center_x = World.Width * 0.1
-        self.spawn.center_y = World.Height * 0.1
+        self.spawn.center_x = self.spawn_point[0]
+        self.spawn.center_y = self.spawn_point[1]
         self.scene.add_sprite("Spawn", self.spawn)
 
         # Set up the spawn, specifically placing it at these coordinates.
         image_source = RESOURCE_DIR.joinpath("buildings").joinpath("endpoint-brain.png").resolve()
         self.brain = arcade.Sprite(image_source.resolve(), 1)
-        self.brain.center_x = World.Width * 0.9
-        self.brain.center_y = World.Height * 0.9
+        self.brain.center_x = self.destination[0]
+        self.brain.center_y = self.destination[1]
         self.scene.add_sprite("Brain", self.brain)
 
         self._impressions_leaked = 0
@@ -153,7 +168,6 @@ class BaseMap:
         if self.tower_positions is not None:
             for _, tower_spot in enumerate(self.tower_positions):
                 if not tower_spot.is_used and tower_spot.is_point_in_spot(x, y):
-                    print("HERE")
                     tower_spot.is_used = True
                     newtower = TowerOfSimpleEmotions(tower_spot.x1, tower_spot.y1, tower_spot.x2, tower_spot.y2)
                     # image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
