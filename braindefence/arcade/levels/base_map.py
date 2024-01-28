@@ -14,17 +14,20 @@ from braindefence.arcade.entities.projectile import Projectile
 
 
 class BaseMap:
-    def __init__(self, level):
+    def __init__(self, map_name, maxBrainHealth=500, currentBrainHealth=0, minBrainHealth=-100):
         self.waypoints = None
         self.tower_positions = None
         self.tile_map = None
         self.spawn_point = None
         self.destination = None
+        self.maxBrainHealth = maxBrainHealth
+        self.minBrainHealth = minBrainHealth
+        self.currentBrainHealth = currentBrainHealth
+
 
         self._timeSinceSpawn = None
-        self._game_phase = None
+        self.game_phase = None
         self._impressions_leaked = None
-        self.level = level
         impressions_spawn_plan = []
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
@@ -48,7 +51,7 @@ class BaseMap:
         self.HUD_batch = arcade.SpriteList()
 
         # Name of map file to load
-        map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
+        # map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
 
         # Layer specific options are defined based on Layer names in a dictionary
         # Doing this will make the SpriteList for the platforms layer
@@ -127,7 +130,7 @@ class BaseMap:
         self.scene.add_sprite("Brain", self.brain)
 
         self._impressions_leaked = 0
-        self._game_phase = GamePhase.Running
+        self.game_phase = GamePhase.Running
 
         self._label = arcade.Text(
             text="",
@@ -167,6 +170,8 @@ class BaseMap:
                 projectile.targetEnemy.hit_by(projectile)
                 self.projectiles.remove(projectile)
 
+        self.evaluate_win_condition()
+
     def check_on_click(self, x, y, button, key_modifiers):
         # check whether a tower spot is clicked
         if self.tower_positions is not None:
@@ -181,3 +186,6 @@ class BaseMap:
                     newtower.center_x = (tower_spot.x1 + tower_spot.x2) / 2
                     newtower.center_y = (tower_spot.y1 + tower_spot.y2) / 2
                     self.towers.append(newtower)
+
+    def evaluate_win_condition(self):
+        pass
