@@ -14,14 +14,15 @@ from braindefence.arcade.HUD import RotatingIcon
 import pyglet
 
 
-class BrainDefence(arcade.Window):
+class BrainDefence(arcade.View):
     """
     Main application class.
     """
 
     def __init__(self):
         # Call the parent class and set up the window
-        super().__init__(World.Width, World.Height, "BrainDefence")
+        super().__init__()
+
         self.current_map = None
         self.gui_camera = None
         self.imagination_score = 0
@@ -47,7 +48,8 @@ class BrainDefence(arcade.Window):
         self.current_map = LevelOneMap()
 
         # Set up the GUI Camera
-        self.gui_camera = arcade.Camera(self.width, self.height)
+        self.camera = arcade.Camera(self.window.width, self.window.height)
+        self.gui_camera = arcade.Camera(self.window.width, self.window.height)
         self.imagination_score = 0
         imagepath = RESOURCE_DIR.joinpath("icons/icon_imagination_rot0.png")
         self.score_icon = RotatingIcon(
@@ -91,12 +93,11 @@ class BrainDefence(arcade.Window):
 
     def on_update(self, delta_time: float):
         if self.current_map.game_phase is GamePhase.Won:
-            pass
-            # print("Winner!")
-            # TODO: add Winner Screen
+            game_over_view = GameOverView()
+            self.window.show_view(game_over_view)
         elif self.current_map.game_phase is GamePhase.Lost:
-            pass
-            # TODO: add Loser Screen
+            game_over_view = GameOverView()
+            self.window.show_view(game_over_view)
         else:
             self.current_map.update(delta_time)
             if (self.current_map._timeSinceSpawn % 1) < 1e-2:
@@ -120,10 +121,63 @@ class BrainDefence(arcade.Window):
             pass
 
 
+class MainMenu(arcade.View):
+    """Class that manages the 'menu' view."""
+
+    def on_show_view(self):
+        """Called when switching to this view."""
+        arcade.set_background_color(arcade.color.WHITE)
+
+    def on_draw(self):
+        """Draw the menu"""
+        self.clear()
+        arcade.draw_text(
+            "Main Menu - Click to play",
+            World.Width // 2,
+            World.Height // 2,
+            arcade.color.BLACK,
+            font_size=30,
+            anchor_x="center",
+        )
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """Use a mouse press to advance to the 'game' view."""
+        game_view = BrainDefence()
+        game_view.setup()
+        self.window.show_view(game_view)
+
+
+class GameOverView(arcade.View):
+    """Class to manage the game overview"""
+
+    def on_show_view(self):
+        """Called when switching to this view"""
+        arcade.set_background_color(arcade.color.BLACK)
+
+    def on_draw(self):
+        """Draw the game overview"""
+        self.clear()
+        arcade.draw_text(
+            "Game Over - Click to restart",
+            World.Width / 2,
+            World.Height / 2,
+            arcade.color.WHITE,
+            30,
+            anchor_x="center",
+        )
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """Use a mouse press to advance to the 'game' view."""
+        game_view = BrainDefence()
+        game_view.setup()
+        self.window.show_view(game_view)
+
+
 def main():
     """Main function"""
-    window = BrainDefence()
-    window.setup()
+    window = arcade.Window(World.Width, World.Height, "BrainDefence")
+    menu_view = MainMenu()
+    window.show_view(menu_view)
     arcade.run()
 
 
