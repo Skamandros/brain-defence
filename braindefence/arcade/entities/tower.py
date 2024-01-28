@@ -4,8 +4,8 @@ from braindefence.arcade.entities import Entity
 
 class Tower(Entity):
 
-    def __init__(self, x1, y1, x2, y2, fire_rate, damage, tower_range, imagefilepath):
-        super().__init__(imagefilepath)
+    def __init__(self, x1, y1, x2, y2, fire_rate, damage, tower_range, imagefilepath, image_scaling=1):
+        super().__init__(imagefilepath, image_scaling)
 
         self._fireCooldown = 0
         self._targetEnemy = None
