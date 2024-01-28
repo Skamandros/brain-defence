@@ -51,11 +51,11 @@ class BrainDefence(arcade.Window):
             in_coords = (x > x1) and (x < x2) and (y > y2) and (y < y1)
             if in_coords:
                 print("HERE")
-                image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
+                image_source = RESOURCE_DIR.joinpath("buildings").joinpath("endpoint-brain.png").resolve()
                 test = arcade.Sprite(image_source.resolve(), 1)
                 test.center_x = (x1 + x2) / 2
                 test.center_y = (y1 + y2) / 2
-                self.current_map.scene.add_sprite("test", test)
+                self.current_map.scene.d_sprite("test", test)
 
         # print(object_list)
         # mats = arcade.get_sprites_at_point((x, y), sprite_lists)

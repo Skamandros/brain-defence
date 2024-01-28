@@ -51,7 +51,7 @@ class BaseMap:
         if self._timeSinceSpawn > World.SpawnRateSeconds:
             self._timeSinceSpawn = 0
             enemy = Impression(
-                RESOURCE_DIR.joinpath("minion-template.png").resolve(), 0.1
+                RESOURCE_DIR.joinpath("impressions").joinpath("impression-1-bad.png").resolve(),1
             )
             self.enemies.append(enemy)
         for i, enemy in enumerate(self.enemies):
@@ -94,14 +94,14 @@ class BaseMap:
         self.scene = arcade.Scene.from_tilemap(self.tile_map)
 
         # Set up the spawn, specifically placing it at these coordinates.
-        image_source = RESOURCE_DIR.joinpath("eye.png").resolve()
+        image_source = RESOURCE_DIR.joinpath("buildings").joinpath("startpoint-eye.png").resolve()
         self.spawn = arcade.Sprite(image_source.resolve(), 1)
         self.spawn.center_x = World.Width * 0.1
         self.spawn.center_y = World.Height * 0.1
         self.scene.add_sprite("Spawn", self.spawn)
 
         # Set up the spawn, specifically placing it at these coordinates.
-        image_source = RESOURCE_DIR.joinpath("brain.png").resolve()
+        image_source = RESOURCE_DIR.joinpath("buildings").joinpath("endpoint-brain.png").resolve()
         self.brain = arcade.Sprite(image_source.resolve(), 1)
         self.brain.center_x = World.Width * 0.9
         self.brain.center_y = World.Height * 0.9
