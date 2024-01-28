@@ -22,7 +22,7 @@ class BaseMap:
 
         self._timeSinceSpawn = None
         self._game_phase = None
-        self._enemies_leaked = None
+        self._impressions_leaked = None
         self.active_impressions = []
         self.level = level
         impressions_spawn_plan = []
