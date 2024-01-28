@@ -22,10 +22,6 @@ class BrainDefence(arcade.Window):
         self.imagination_score = 0
         self.increment_score = 0
 
-        # a UIManager to handle the UI.
-        self.manager = arcade.gui.UIManager()
-        self.manager.enable()
-
     def setup(self):
         """Set up the game here. Call this function to restart the game."""
 
