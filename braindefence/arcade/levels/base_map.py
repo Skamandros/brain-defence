@@ -178,9 +178,9 @@ class BaseMap:
             if arcade.check_for_collision(projectile, projectile.targetEnemy):
                 projectile.targetEnemy.hit_by(projectile)
                 self.projectiles.remove(projectile)
-        self.brain.indicator_bar.fullness = (
+        self.brain.indicator_bar.fullness = min(1, (
             self.currentBrainHealth - self.minBrainHealth
-        ) / (abs(self.minBrainHealth) + abs(self.maxBrainHealth))
+        ) / (abs(self.minBrainHealth) + abs(self.maxBrainHealth)))
 
         self.evaluate_win_condition()
 
