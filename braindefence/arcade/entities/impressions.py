@@ -3,9 +3,9 @@ from braindefence.arcade.constants import World
 
 
 class Impression(Entity):
-    def __init__(self, imagefilepath, CHARACTER_SCALING):
+    def __init__(self, imagefilepath, character_scaling):
         # Setup parent class
-        super().__init__(imagefilepath, CHARACTER_SCALING)
+        super().__init__(imagefilepath, character_scaling)
 
         self.health = 10
         self.speed = 10
