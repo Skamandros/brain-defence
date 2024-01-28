@@ -12,19 +12,27 @@ from braindefence.arcade.gamephase import GamePhase
 from braindefence.arcade.entities.tower import Tower
 from braindefence.arcade.entities.projectile import Projectile
 
+from braindefence.arcade.HUD.hud import IndicatorBar
+
 
 class BaseMap:
-    def __init__(self, level):
+    def __init__(
+        self, map_name, maxBrainHealth=500, currentBrainHealth=0, minBrainHealth=-100
+    ):
         self.waypoints = None
         self.tower_positions = None
         self.tile_map = None
         self.spawn_point = None
         self.destination = None
+        self.maxBrainHealth = maxBrainHealth
+        self.minBrainHealth = minBrainHealth
+        self.currentBrainHealth = currentBrainHealth
+
+        self.bar_list = arcade.SpriteList()
 
         self._timeSinceSpawn = None
-        self._game_phase = None
+        self.game_phase = None
         self._impressions_leaked = None
-        self.level = level
         impressions_spawn_plan = []
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
@@ -48,7 +56,7 @@ class BaseMap:
         self.HUD_batch = arcade.SpriteList()
 
         # Name of map file to load
-        map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
+        # map_name = RESOURCE_DIR.joinpath("maps/Level-one.tmx").resolve()
 
         # Layer specific options are defined based on Layer names in a dictionary
         # Doing this will make the SpriteList for the platforms layer
@@ -125,9 +133,12 @@ class BaseMap:
         self.brain.center_x = self.destination[0]
         self.brain.center_y = self.destination[1]
         self.scene.add_sprite("Brain", self.brain)
+        self.brain.indicator_bar: IndicatorBar = IndicatorBar(
+            self.brain, self.bar_list, (self.brain.center_x, self.brain.center_y)
+        )
 
         self._impressions_leaked = 0
-        self._game_phase = GamePhase.Running
+        self.game_phase = GamePhase.Running
 
         self._label = arcade.Text(
             text="",
@@ -149,6 +160,7 @@ class BaseMap:
         self.towers.draw()
         self.impressions.draw()
         self.projectiles.draw()
+        self.bar_list.draw()
 
         if self._label.visible:
             self._label.draw()
@@ -166,6 +178,11 @@ class BaseMap:
             if arcade.check_for_collision(projectile, projectile.targetEnemy):
                 projectile.targetEnemy.hit_by(projectile)
                 self.projectiles.remove(projectile)
+        self.brain.indicator_bar.fullness = min(1, (
+            self.currentBrainHealth - self.minBrainHealth
+        ) / (abs(self.minBrainHealth) + abs(self.maxBrainHealth)))
+
+        self.evaluate_win_condition()
 
     def check_on_click(self, x, y, button, key_modifiers):
         # check whether a tower spot is clicked
@@ -181,3 +198,6 @@ class BaseMap:
                     newtower.center_x = (tower_spot.x1 + tower_spot.x2) / 2
                     newtower.center_y = (tower_spot.y1 + tower_spot.y2) / 2
                     self.towers.append(newtower)
+
+    def evaluate_win_condition(self):
+        pass

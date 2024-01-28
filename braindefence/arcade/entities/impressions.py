@@ -3,13 +3,17 @@ from braindefence.arcade.constants import World
 
 
 class Impression(Entity):
-    def __init__(self, impressionWaypoints, startPoint, imagefilepath, character_scaling):
+    def __init__(
+        self, impressionWaypoints, startPoint, imagefilepath, character_scaling
+    ):
         # Setup parent class
         super().__init__(imagefilepath, character_scaling)
 
         self._atDestination = False
         self.impressionWaypoints = impressionWaypoints
-        self.health = 10
+        self.maxPositiveHealth = 50
+        self.maxNegativeHealth = -20
+        self.currentHealth = -20
         self.speed = 300
         self._targetX = impressionWaypoints[0][0]
         self._targetY = impressionWaypoints[0][1]
@@ -17,6 +21,7 @@ class Impression(Entity):
 
         self.center_x = startPoint[0]
         self.center_y = startPoint[1]
+        self.hit_box = [[-10, -10], [-10, 10], [10, 10], [10, -10]]
 
     def update(self, dt):
         # print("Current Target: ", self._targetX, self._targetY, "Position: ", self.center_x, self.center_y)
@@ -27,20 +32,15 @@ class Impression(Entity):
 
         if self.collides_with_point([self._targetX, self._targetY]):
             self.atWayPoint += 1
-            # print(self.atWayPoint, len(self.impressionWaypoints)-1)
-            if self.atWayPoint > len(self.impressionWaypoints)-1:
+            # print(self.atWayPoint, len(self.impressionWaypoints) - 1)
+            if self.atWayPoint > len(self.impressionWaypoints) - 1:
                 self._atDestination = True
             else:
                 self._targetX = self.impressionWaypoints[self.atWayPoint][0]
                 self._targetY = self.impressionWaypoints[self.atWayPoint][1]
 
-
-    def killed(self):
-        return self.health <= 0
-
     def passed(self):
         return self._atDestination
 
-
     def hit_by(self, projectile):
-        pass
+        self.currentHealth = min(self.maxPositiveHealth, self.currentHealth + projectile.damage)

@@ -40,6 +40,8 @@ class GameScreen(EntityEventHandler):
         )
         self._label.visible = False
 
+        pyglet.resource.media('sound/Level01_Intro.mp3').play()
+
     def enemy_killed(self):
         self._enemies_killed += 1
         if self._enemies_killed > 20:

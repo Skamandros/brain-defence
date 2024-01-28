@@ -8,6 +8,8 @@ import arcade
 
 pyglet.resource.path = ["../resources"]
 pyglet.resource.reindex()
+pyglet.options['audio'] = ('openal', 'pulse', 'directsound', 'silent')
+pyglet.options['search_local_libs'] = True
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(message)s",
