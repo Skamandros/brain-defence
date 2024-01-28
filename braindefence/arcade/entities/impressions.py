@@ -17,6 +17,7 @@ class Impression(Entity):
             arcade.load_texture(RESOURCE_DIR.joinpath("impressions/impression-1-good.png").resolve()),
             arcade.load_texture(RESOURCE_DIR.joinpath("impressions/impression-1-bad.png").resolve())
             ]
+        self.set_texture(2)
         self._atDestination = False
         self.impressionWaypoints = impressionWaypoints
         self.maxPositiveHealth = 50
