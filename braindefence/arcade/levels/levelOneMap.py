@@ -18,7 +18,7 @@ class LevelOneMap(BaseMap):
             self.waypoints,
             self.spawn_point,
             RESOURCE_DIR.joinpath("impressions/impression-1.png").resolve(),
-            0.3,
+            0.75,
         )
         self.impressions.append(impression)
 
