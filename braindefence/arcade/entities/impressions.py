@@ -11,7 +11,9 @@ class Impression(Entity):
 
         self._atDestination = False
         self.impressionWaypoints = impressionWaypoints
-        self.health = 10
+        self.maxPositiveHealth = 50
+        self.maxNegativeHealth = -20
+        self.currentHealth = -20
         self.speed = 300
         self._targetX = impressionWaypoints[0][0]
         self._targetY = impressionWaypoints[0][1]
@@ -37,11 +39,8 @@ class Impression(Entity):
                 self._targetX = self.impressionWaypoints[self.atWayPoint][0]
                 self._targetY = self.impressionWaypoints[self.atWayPoint][1]
 
-    def killed(self):
-        return self.health <= 0
-
     def passed(self):
         return self._atDestination
 
     def hit_by(self, projectile):
-        pass
+        self.currentHealth = min(self.maxPositiveHealth, self.currentHealth + projectile.damage)

@@ -5,10 +5,9 @@ from braindefence.arcade.entities import Impression
 
 
 class Projectile(arcade.Sprite):
-    def __init__(
-        self, x, y, target: Impression, image_filepath, image_scaling=1, speed=400
-    ):
+    def __init__(self, x, y, target: Impression, damage, image_filepath, image_scaling=1, speed=100):
         super().__init__(image_filepath, image_scaling)
+        self.damage = damage
         self.speed = speed
         self.center_x = x
         self.center_y = y
@@ -22,12 +21,5 @@ class Projectile(arcade.Sprite):
 
 
 class BaseProjectile(Projectile):
-    def __init__(self, x, y, target):
-        super().__init__(
-            x,
-            y,
-            target,
-            RESOURCE_DIR.joinpath("buildings")
-            .joinpath("tower-base-projectile.png")
-            .resolve(),
-        )
+    def __init__(self, x, y, target, damage):
+        super().__init__(x, y, target, damage, RESOURCE_DIR.joinpath("buildings").joinpath("tower-base-projectile.png").resolve(), speed=750)

@@ -1,6 +1,7 @@
 import arcade
 from pathlib import Path
 
+from braindefence.arcade import GamePhase
 from braindefence.arcade.levels import LevelOneMap
 from constants import *
 
@@ -68,13 +69,21 @@ class BrainDefence(arcade.Window):
         self.current_map.check_on_click(x, y, button, key_modifiers)
 
     def on_update(self, delta_time: float):
-        self.current_map.update(delta_time)
-        if (self.current_map._timeSinceSpawn % 1) < 1e-2:
-            self.increment_score = 1
+        if self.current_map.game_phase is GamePhase.Won:
+            pass
+            # print("Winner!")
+            # TODO: add Winner Screen
+        elif self.current_map.game_phase is GamePhase.Lost:
+            pass
+            # TODO: add Loser Screen
         else:
-            self.increment_score = 0
-        self.imagination_score += self.increment_score
-        self.score_icon.update()
+            self.current_map.update(delta_time)
+            if (self.current_map._timeSinceSpawn % 1) < 1e-2:
+                self.increment_score = 1
+            else:
+                self.increment_score = 0
+            self.imagination_score += self.increment_score
+            self.score_icon.update()
 
 
 def main():

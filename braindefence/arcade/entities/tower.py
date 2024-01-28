@@ -36,7 +36,7 @@ class Tower(Entity):
             self._targetEnemy = None
         self._fireCooldown = max(0, self._fireCooldown - dt)
         if self._fireCooldown == 0 and self._targetEnemy is not None:
-            projectiles.append(BaseProjectile(self.center_x, self.center_y, self._targetEnemy))
+            projectiles.append(self.get_projectile(self.center_x, self.center_y, self._targetEnemy))
             self._fireCooldown = self.fire_rate
 
     def calc_distance(self, impression):
@@ -44,3 +44,6 @@ class Tower(Entity):
 
     def is_point_in_tower(self, x, y):
         return (x > self.x1) and (x < self.x2) and (y > self.y2) and (y < self.y1)
+
+    def get_projectile(self, center_x, center_y, _targetEnemy):
+        return None
