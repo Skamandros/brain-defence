@@ -130,17 +130,11 @@ class BaseMap:
         # print(len(list(self.enemies)))
         # Draw our sprites
         # self.wall_list.draw()
-        self.scene.add_sprite_list(
-            name="towers", use_spatial_hash=True, sprite_list=self.towers
-        )
-        self.scene.add_sprite_list(
-            name="enemies", use_spatial_hash=False, sprite_list=self.impressions
-        )
-        self.scene.add_sprite_list(
-            name="projectiles", use_spatial_hash=False, sprite_list=self.projectiles
-        )
-
         self.scene.draw()
+        self.towers.draw()
+        self.impressions.draw()
+        self.projectiles.draw()
+
         if self._label.visible:
             self._label.draw()
 
