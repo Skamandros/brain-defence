@@ -4,7 +4,12 @@ import arcade
 from pathlib import Path
 
 from braindefence.arcade import GamePhase
-from braindefence.arcade.levels import LevelOneMap, LevelTwoMap, LevelThreeMap, LevelFourMap
+from braindefence.arcade.levels import (
+    LevelOneMap,
+    LevelTwoMap,
+    LevelThreeMap,
+    LevelFourMap,
+)
 from braindefence.arcade.sound import SoundManager, BackgroundMusic
 from constants import *
 
@@ -39,7 +44,7 @@ class BrainDefence(arcade.View):
         self.gui_camera = None
         self.imagination_score = 0
         self.increment_score = 0
-        self.sound_manager = None
+        # self.sound_manager = None
         self.story_events = []
         self.overall_brain_remaining = 0
         self.level = 0
@@ -50,10 +55,7 @@ class BrainDefence(arcade.View):
         self.protagonist.center_x = World.Width * 0.9
         self.protagonist.center_y = self.protagonist.height / 2
         self.protagonist.visible = False
-        try:
-            self.sound_manager = SoundManager()
-        except:
-            pass
+        self.sound_manager = SoundManager()
 
     def setup(self, level=0):
         """Set up the game here. Call this function to restart the game."""
@@ -110,7 +112,9 @@ class BrainDefence(arcade.View):
         self.current_map.check_on_click(x, y, button, key_modifiers)
 
     def on_update(self, delta_time: float):
-        if (self.current_map.game_phase is GamePhase.LevelEnded) or (self.current_map.game_phase is GamePhase.Lost):
+        if (self.current_map.game_phase is GamePhase.LevelEnded) or (
+            self.current_map.game_phase is GamePhase.Lost
+        ):
             self._update_score_and_play_intro()
             self.level += 1
             if len(self.levels) == self.level:
@@ -129,51 +133,73 @@ class BrainDefence(arcade.View):
             self.score_icon.update()
             match self.current_map.level:
                 case 1:
-                    if self.current_map.currentBrainHealth < 375 and StoryEvent.E1_1 not in self.story_events:
+                    if (
+                        self.current_map.currentBrainHealth < 375
+                        and StoryEvent.E1_1 not in self.story_events
+                    ):
                         self.story_events.append(StoryEvent.E1_1)
                         self.sound_manager.play_event_sound(1, 1)
                         self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
-                    elif self.current_map.currentBrainHealth < 200 and StoryEvent.E1_2 not in self.story_events:
+                    elif (
+                        self.current_map.currentBrainHealth < 200
+                        and StoryEvent.E1_2 not in self.story_events
+                    ):
                         self.story_events.append(StoryEvent.E1_2)
                         self.sound_manager.play_event_sound(1, 2)
                         self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
                 case 2:
-                    if self.current_map.currentBrainHealth < 350 and StoryEvent.E2_1 not in self.story_events:
+                    if (
+                        self.current_map.currentBrainHealth < 350
+                        and StoryEvent.E2_1 not in self.story_events
+                    ):
                         self.story_events.append(StoryEvent.E2_1)
                         self.sound_manager.play_event_sound(2, 1)
                         self.sound_manager.switch_bg_music(BackgroundMusic.Shocked)
-                    elif self.current_map.currentBrainHealth < 200 and StoryEvent.E2_2 not in self.story_events:
+                    elif (
+                        self.current_map.currentBrainHealth < 200
+                        and StoryEvent.E2_2 not in self.story_events
+                    ):
                         self.story_events.append(StoryEvent.E2_2)
                         self.sound_manager.play_event_sound(2, 2)
                         self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
                 case 3:
-                    if self.current_map.currentBrainHealth < 350 and StoryEvent.E3_1 not in self.story_events:
+                    if (
+                        self.current_map.currentBrainHealth < 350
+                        and StoryEvent.E3_1 not in self.story_events
+                    ):
                         self.story_events.append(StoryEvent.E3_1)
                         self.sound_manager.play_event_sound(3, 1)
                         self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
-                    elif self.current_map.currentBrainHealth < 200 and StoryEvent.E3_2 not in self.story_events:
+                    elif (
+                        self.current_map.currentBrainHealth < 200
+                        and StoryEvent.E3_2 not in self.story_events
+                    ):
                         self.story_events.append(StoryEvent.E3_2)
                         self.sound_manager.play_event_sound(3, 2)
                         self.sound_manager.switch_bg_music(BackgroundMusic.Default)
                 case 4:
-                    if self.current_map.currentBrainHealth < 300 and StoryEvent.E4_1 not in self.story_events:
+                    if (
+                        self.current_map.currentBrainHealth < 300
+                        and StoryEvent.E4_1 not in self.story_events
+                    ):
                         self.story_events.append(StoryEvent.E4_1)
                         self.sound_manager.play_event_sound(4, 1)
                         self.sound_manager.switch_bg_music(BackgroundMusic.Negative)
-                    elif self.current_map.currentBrainHealth < 100 and StoryEvent.E4_2 not in self.story_events:
+                    elif (
+                        self.current_map.currentBrainHealth < 100
+                        and StoryEvent.E4_2 not in self.story_events
+                    ):
                         self.story_events.append(StoryEvent.E4_2)
                         self.sound_manager.play_event_sound(4, 2)
                         self.sound_manager.switch_bg_music(BackgroundMusic.Psycho)
 
-        try:
-            self.sound_manager.on_update(delta_time)
-            self.protagonist.visible = self.sound_manager.is_sound_playing()
-
-        except:
-            pass
+        self.sound_manager.on_update(delta_time)
+        self.protagonist.visible = self.sound_manager.is_sound_playing()
 
     def _update_score_and_play_intro(self):
-        logging.info("Remaining brain health: {}".format(self.current_map.currentBrainHealth))
+        logging.info(
+            "Remaining brain health: {}".format(self.current_map.currentBrainHealth)
+        )
         self.overall_brain_remaining += self.current_map.currentBrainHealth
         match self.current_map.level:
             case 1:  # level 2 intro
